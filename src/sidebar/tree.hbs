@@ -1,0 +1,11 @@
+{{#if tree}}
+<ul class="list-unstyled tree">
+{{#each tree}}
+  <li class="node" data-filter="{{name}}" data-level="{{level}}">
+    {{#if tree}}<a class="expand"> &gt; </a>{{else}} &gt; {{/if}}
+    <a class="filter">{{name}}</a> ({{count}})
+    {{> sidebar/tree}}
+  </li>
+{{/each}}
+</ul>
+{{/if}}

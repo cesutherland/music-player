@@ -1,0 +1,17 @@
+{
+  "name": "spotify-player",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "hbs": "^2.7.0"
+  },
+  "devDependencies": {
+    "hbsfy": "^2.1.0"
+  },
+  "browserify": {
+    "transform": [
+      "hbsfy"
+    ]
+  }
+}
+

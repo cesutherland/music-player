@@ -1,0 +1,9 @@
+{{#each hierarchy}}<span class="item"><a data-level="{{level}}">{{label}}</a></span>{{/each}}
+{{#if add}}<a class="add pull-right">+</a>{{/if}}
+<div class="dropdown">
+  <ul class="dropdown list-unstyled">
+  {{#each dimensions}}
+    <li><a class="select" data-id="{{id}}">{{label}}</a></li>
+  {{/each}}
+  </ul>
+</div>
