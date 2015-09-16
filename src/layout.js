@@ -41,8 +41,10 @@ module.exports = Layout.extend({
       );
       // Filters:
       var filterMatch = true;
+      var value = '';
       for (var i = 0; i < hierarchy.length; i++) {
-        filterMatch = filterMatch && (!filter[i] || filter[i] === model.get(hierarchy[i]));
+        value = model.get(hierarchy[i]);
+        filterMatch = filterMatch && (!filter[i] || filter[i] === value || (value.indexOf && value.indexOf(filter[i]) >= 0));
       }
       return filterMatch && queryMatch;
     }));

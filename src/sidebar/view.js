@@ -25,23 +25,44 @@ module.exports = Layout.extend({
   },
 
   getRenderData: function () {
+    var query = this.model;
     var tracks = this.collection;
-    var hierarchy = this.model.get('hierarchy');
+    var dimensions = query.dimensions;
+    var hierarchy = query.get('hierarchy');
     hierarchy = hierarchy.slice(0, hierarchy.length);
 
     function layout (hierarchy, tracks, level) {
-      var dimension = hierarchy[0];
+      var dimension = dimensions.get(hierarchy[0]);
       level = level || 0;
       if (dimension) {
-        return _.map(tracks.groupBy(dimension), function (value, key) {
-          return {
-            name: key,
-            level: level,
-            count: value.length,
-            tree: layout(hierarchy.slice(1, hierarchy.length), new Tracks(value), level + 1)
-          };
-        });
+        var values = dimension.get('values');
+        if (values) {
+          return _.chain(values)
+            .map(function (value) {
+              var filteredTracks = new Tracks(tracks.filter(function (track) {
+                return (track.get(dimension.id) || []).indexOf(value) !== -1;
+              }));
+              return map(value, level, hierarchy, filteredTracks);
+            })
+            .filter(function (node) {
+              return node.count;
+            })
+            .value();
+        } else {
+          return _.map(tracks.groupBy(dimension.id), function (value, key) {
+            return map(key, level, hierarchy, new Tracks(value));
+          });
+        }
       }
+      return tree;
+    }
+    function map (name, level, hierarchy, tracks) {
+      return {
+        name: name,
+        level: level,
+        count: tracks.length,
+        tree: layout(hierarchy.slice(1, hierarchy.length), tracks, level + 1)
+      };
     }
     var tree = layout(hierarchy, tracks);
 

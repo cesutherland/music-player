@@ -16,9 +16,12 @@ var List = require('app/views/list');
 var TracksLayout = require('app/layout');
 
 tracks.fetch().then(function () {
+  var query = new Query(null, {
+    tracks: tracks
+  });
   var layout = new TracksLayout({
     collection: tracks,
-    query: new Query()
+    query: query
   });
   $('.app').html(layout.render().$el);
 })
