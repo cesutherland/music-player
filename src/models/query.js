@@ -12,8 +12,8 @@ module.exports = Model.extend({
     filter: [
     ],
     hierarchy: [
-      'genre',
-      'mood'
+      'artist',
+      'album'
     ]
   },
   initialize: function (attributes, options) {
@@ -31,6 +31,7 @@ module.exports = Model.extend({
         id: 'artist',
         label: 'Artist'
       },
+      /*
       {
         id: 'genre',
         label: 'Genre'
@@ -45,6 +46,7 @@ module.exports = Model.extend({
         label: 'Writer',
         values: values.writer
       },
+      */
       {
         id: 'copyrightYear',
         label: 'Year'
