@@ -1,0 +1,31 @@
+{
+  "name": "writer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.17.1",
+    "babel-preset-react": "^6.24.1",
+    "bootstrap": "^3.3.7",
+    "connect-memcached": "^0.2.0",
+    "cors": "^2.8.4",
+    "express": "^4.16.2",
+    "express-session": "^1.15.6",
+    "gib": "^1.0.6",
+    "gib-recipe-assets": "0.0.3",
+    "gib-recipe-browserify": "0.0.8",
+    "gib-recipe-less": "0.0.4",
+    "gib-recipe-server": "0.0.6",
+    "gulp": "^3.9.1",
+    "idyll-compiler": "^2.0.10",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "react-router": "^4.2.0",
+    "react-router-dom": "^4.2.2"
+  }
+}
