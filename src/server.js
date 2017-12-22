@@ -1,6 +1,7 @@
 // Modules:
 const express         = require('express');
 const session         = require('express-session')
+const bodyParser      = require('body-parser');
 const cors            = require('cors')
 const MemcachedStore  = require('connect-memcached')(session)
 const config          = require('./config');
@@ -29,6 +30,7 @@ app.use(session({
     hosts: ['127.0.0.1:11211']
   })
 }));
+app.use(bodyParser.json());
 
 const oauthMiddleware = (req, res, next) => {
   req.oauth = oauth(oauthConfig);
@@ -70,11 +72,12 @@ app.get('/init', (req, res) => {
 });
 
 // Spotify proxy:
-app.get('/api/spotify/*', spotifyMiddleware, (req, res) => {
+app.all('/api/spotify/*', spotifyMiddleware, (req, res) => {
+  const method = req.method.toLowerCase();
   const path = req.path.replace(/^\/api\/spotify/i, '');
-  req.spotify.get(path).then(
+  req.spotify.request(method, path, req.body).then(
     data => res.send(data),
-    error => console.error(error.response.data)
+    error => console.error(error.response)
   );
 });
 

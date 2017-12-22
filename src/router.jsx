@@ -3,6 +3,7 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { layout }                  from 'react-sidebar-layout';
 import Login from './Login.jsx';
 import Player from './Player.jsx';
+import Tracks from './Tracks.jsx';
 
 const routes = [
   {
@@ -12,7 +13,12 @@ const routes = [
     component: (a) => {
       const authentication = a.authentication;
 			return (a) => {
-				return <Player accessToken={authentication ? authentication.accessToken : null}></Player>;
+        return (
+          <div>
+            <Player accessToken={authentication ? authentication.accessToken : null}></Player>
+            <Tracks />
+          </div>
+        );
       }
 		}
   }

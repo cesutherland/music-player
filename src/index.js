@@ -1,6 +1,7 @@
 import ReactDOM from 'react-dom';
+import axios    from 'axios';
 import router   from './router.jsx';
-import axios from 'axios';
+import player   from './player';
 
 ReactDOM.render(router({authentication:{}}), document.getElementById('layout'));
 
@@ -16,7 +17,6 @@ axios({
       accessToken: data.access_token
     }
   }
+  player.init(data.access_token);
   ReactDOM.render(router(state), document.getElementById('layout'));
 });
-
-window.onSpotifyWebPlaybackSDKReady = () => null;
