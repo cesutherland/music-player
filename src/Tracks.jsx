@@ -14,12 +14,12 @@ class Tracks extends React.Component {
   componentDidMount () {
     axios({
       method: 'get',
-      url: 'http://localhost:3000/api/spotify/me/tracks',
+      url: 'http://localhost:3000/api/tracks',
       withCredentials: true
-    }).then(data => {
+    }).then(res => {
       this.setState({
-        tracks: data.data.items.map(item => item.track)
-      });
+        tracks: res.data
+      })
     });
   }
 
@@ -32,9 +32,7 @@ class Tracks extends React.Component {
         uris: ['spotify:track:'+id]
       }
     }).then(data => {
-      this.setState({
-        tracks: data.data.items.map(item => item.track)
-      });
+      console.log(data);
     });
   }
 

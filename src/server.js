@@ -7,10 +7,12 @@ const MemcachedStore  = require('connect-memcached')(session)
 const config          = require('./config');
 const spotify         = require('./api/spotify');
 const oauth           = require('./api/oauth');
+const knexfile        = require('../knexfile');
+const knex            = require('knex')(knexfile.development);
 
 // Config:
 const app             = express();
-const web             = 'http://localhost:8081/';
+const web             = 'http://localhost:8080/';
 const oauthConfig = {
   client_id: config.oauth.client_id,
   redirect_uri: config.oauth.redirect_uri
@@ -19,7 +21,7 @@ const oauthConfig = {
 
 // App:
 app.use(cors({
-  origin: 'http://localhost:8081',
+  origin: 'http://localhost:8080',
   credentials: true
 }));
 app.use(session({
@@ -47,6 +49,7 @@ const spotifyMiddleware = (req, res, next) => {
 };
 
 app.get('/', function (req, res) {
+  knex('tracks').select('*').then(tracks => console.log(tracks));
   res.send('hello world: '+JSON.stringify(req.session));
 });
 
@@ -71,6 +74,27 @@ app.get('/init', (req, res) => {
   });
 });
 
+app.get('/job', spotifyMiddleware, (req, res) => {
+  const limit = 50;
+  const collectTracks = offset => 
+    req.spotify.getTracks(offset).then(data =>
+      (data.total > offset + limit)
+        ? collectTracks(offset + limit).then(tracks => tracks.concat(data.items))
+        : data.items
+    );
+  ;
+  collectTracks(0)
+    .then(
+      tracks =>
+        knex.batchInsert('tracks', tracks.map(track =>
+          ({id: track.track.id, track: JSON.stringify(track.track)})
+        ), 50)
+    ).then(
+      tracks => res.send('ok'),
+      error => console.error(error)
+    );
+});
+
 // Spotify proxy:
 app.all('/api/spotify/*', spotifyMiddleware, (req, res) => {
   const method = req.method.toLowerCase();
@@ -79,6 +103,11 @@ app.all('/api/spotify/*', spotifyMiddleware, (req, res) => {
     data => res.send(data),
     error => console.error(error.response)
   );
+});
+
+app.get('/api/tracks', (req, res) => {
+  knex('tracks').select('*').then(tracks =>
+    res.send(tracks.map(track => JSON.parse(track.track))));
 });
 
 
