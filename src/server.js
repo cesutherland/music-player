@@ -67,10 +67,26 @@ app.get('/callback', oauthMiddleware, function (req, res) {
   );
 });
 
+app.get('/token', oauthMiddleware, function (req, res) {
+  req.oauth.refresh(req.session.refresh_token).then(
+    data => {
+      req.session.access_token = data.access_token;
+      res.send({
+        access_token: req.session.access_token
+      });
+    },
+    error => {
+      console.error('error');
+      console.log(error.response);
+    }
+  );
+});
+
 
 app.get('/init', (req, res) => {
+  const session = req.session;
   res.send({
-    access_token: req.session.access_token
+    access_token: session.refresh_token && session.access_token
   });
 });
 
