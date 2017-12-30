@@ -26,7 +26,14 @@ axios({
     }
   };
 
-  player.init(data.access_token);
+  player.init(data.access_token, callback => axios({
+    method: 'get',
+    url: 'http://localhost:3000/token',
+    withCredentials: true
+  }).then(res => {
+    callback(res.data.access_token);
+  }));
+
   render(state);
 
   axios({
