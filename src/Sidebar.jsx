@@ -1,0 +1,68 @@
+import React from 'react';
+import player from './player';
+
+class Sidebar extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      expanded: {}
+    };
+  }
+
+  selectArtist (id) {
+    const expanded = this.state.expanded;
+    expanded[id] = !expanded[id];
+    this.setState({
+      expanded: expanded
+    });
+  }
+
+  getArtistAlbums (artist) {
+    var albums = Object.values(artist.tracks.reduce((albums, track) => {
+      albums[track.album.id] = albums[track.album.id] || track.album;
+      return albums;
+    }, {})).sort((a, b) => a.name.localeCompare(b.name));
+    return albums;
+  }
+
+  render () {
+
+    const tracks = this.props.tracks;
+
+    const artists = Object.values(tracks.reduce((artists, track) => {
+      track.artists.map(artist => {
+        artist = artists[artist.id] = artists[artist.id] || artist;
+        artist.tracks = artist.tracks || [];
+        artist.tracks.push(track);
+      })
+      return artists;
+    }, {})).sort((a, b) => a.name.localeCompare(b.name));
+
+    return (
+      <ul className="explorer list-unstyled">
+      {artists.map((artist, i) => 
+        <li key={artist.id}>
+          <a
+            onClick={this.selectArtist.bind(this, artist.id)}
+            className={this.state.expanded[artist.id] ? 'expanded' : ''}
+          >
+            {artist.name}
+          </a>
+          {this.state.expanded[artist.id] &&
+            <ul className="list-unstyled">
+            {this.getArtistAlbums(artist).map(album =>
+              <li key={album.id}>
+                <a>{album.name}</a>
+              </li>
+            )}
+            </ul>
+          }
+        </li>
+      )}
+      </ul>
+    );
+  }
+}
+
+export default Sidebar;

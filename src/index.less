@@ -1,1 +1,43 @@
 @import "node_modules/react-sidebar-layout/src/index.less";
+
+.sidebar-content {
+
+  overflow-y: scroll;
+  position: absolute;
+  left: 0px;
+  right: 2px;
+  bottom: 62px;
+  top: 72px;
+}
+
+.explorer {
+  a {
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 100;
+  }
+  ul {
+    padding-left: 12px;
+    margin-bottom: 2px;
+  }
+  li {
+    margin: 0px 0px;
+  }
+  .expanded {
+    font-weight: bold;
+  }
+}
+
+html, body {
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #666;
+    border-radius: 2px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #ddd;
+    border-radius: 3px;
+  }
+}
