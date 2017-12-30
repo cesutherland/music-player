@@ -1,5 +1,6 @@
 import React from 'react';
 import player from './player';
+import { connect } from 'react-redux';
 
 class Sidebar extends React.Component {
 
@@ -53,7 +54,7 @@ class Sidebar extends React.Component {
             <ul className="list-unstyled">
             {this.getArtistAlbums(artist).map(album =>
               <li key={album.id}>
-                <a>{album.name}</a>
+                <a onClick={this.props.onLoadAlbum.bind(this, album.id)}>{album.name}</a>
               </li>
             )}
             </ul>
@@ -65,4 +66,17 @@ class Sidebar extends React.Component {
   }
 }
 
-export default Sidebar;
+const loadAlbum = id => {
+  return {
+    type: 'LOAD_ALBUM',
+    id
+  }
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    onLoadAlbum: id => dispatch(loadAlbum(id))
+  }
+}
+
+export default connect(null, mapDispatchToProps)(Sidebar)

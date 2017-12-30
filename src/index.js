@@ -1,14 +1,39 @@
-import ReactDOM from 'react-dom';
-import axios    from 'axios';
-import router   from './router.jsx';
-import player   from './player';
+import React               from 'react';
+import ReactDOM            from 'react-dom';
+import axios               from 'axios';
+import router              from './router.jsx';
+import player              from './player';
+import { Provider }        from 'react-redux'
+import { createStore }     from 'redux'
+import { combineReducers } from 'redux'
 
-
-ReactDOM.render(router({tracks: [], authentication:{}}), document.getElementById('layout'));
+let store = createStore(combineReducers({
+  albumId: (state = null, action) => {
+    switch (action.type) {
+      case 'LOAD_ALBUM':
+        return action.id;
+      default:
+        return state;
+    }
+  },
+  tracks: (state = [], action) => {
+    switch (action.type) {
+      case 'TRACKS':
+        return action.tracks;
+      default:
+        return state;
+    }
+  }
+}));
 
 function render(state) {
-  ReactDOM.render(router(state), document.getElementById('layout'));
+  ReactDOM.render(
+    <Provider store={store}>{router(state)}</Provider>,
+    document.getElementById('layout')
+  );
 }
+
+render({tracks: [], authentication:{}});
 
 axios({
   method: 'get',
@@ -41,7 +66,8 @@ axios({
     url: 'http://localhost:3000/api/tracks',
     withCredentials: true
   }).then(res => {
-    state.tracks = res.data;
+    const tracks = state.tracks = res.data;
+    store.dispatch({type: 'TRACKS', tracks});
     render(state);
   });
 });

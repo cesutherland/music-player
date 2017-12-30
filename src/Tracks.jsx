@@ -1,6 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import player from './player';
+import { connect } from 'react-redux';
 
 class Tracks extends React.Component {
 
@@ -45,4 +46,17 @@ class Tracks extends React.Component {
   }
 }
 
-export default Tracks;
+const getTracks = (tracks, albumId) => {
+  return albumId
+    ? tracks.filter(track => track.album.id === albumId)
+    : tracks;
+}
+
+const mapStateToProps = state => {
+  return {
+    tracks: getTracks(state.tracks, state.albumId)
+  }
+}
+
+
+export default connect(mapStateToProps, null)(Tracks)
