@@ -10,16 +10,13 @@ const routes = [
     exact: true,
     path: '/',
     name: 'Home',
-    component: (a) => {
-      const authentication = a.authentication;
-			return (a) => {
-        return (
-          <div>
-            <Player accessToken={authentication ? authentication.accessToken : null}></Player>
-            <Tracks />
-          </div>
-        );
-      }
+    component: (state) => {
+      const authentication = state.authentication;
+			return () => 
+        <div>
+          <Player accessToken={authentication ? authentication.accessToken : null}></Player>
+          <Tracks tracks={state.tracks}/>
+        </div>
 		}
   }
 ];

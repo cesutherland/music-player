@@ -4,25 +4,6 @@ import player from './player';
 
 class Tracks extends React.Component {
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      tracks: []
-    };
-  }
-
-  componentDidMount () {
-    axios({
-      method: 'get',
-      url: 'http://localhost:3000/api/tracks',
-      withCredentials: true
-    }).then(res => {
-      this.setState({
-        tracks: res.data
-      })
-    });
-  }
-
   onPlayClick (id) {
     axios({
       method: 'put',
@@ -50,7 +31,7 @@ class Tracks extends React.Component {
             </tr>
           </thead>
           <tbody>
-          {this.state.tracks.map(track =>
+          {this.props.tracks.map(track =>
             <tr key={track.id}>
               <td><a onClick={this.onPlayClick.bind(this, track.id)}>Play</a></td>
               <td>{track.artists.map(artist => artist.name).join(', ')}</td>
