@@ -1,21 +1,16 @@
 import React from 'react';
-import axios from 'axios';
 import player from './player';
 import { connect } from 'react-redux';
+import play from './play';
 
 class Tracks extends React.Component {
 
-  onPlayClick (id) {
-    axios({
-      method: 'put',
-      url: 'http://localhost:3000/api/spotify/me/player/play',
-      withCredentials: true,
-      data: {
-        uris: ['spotify:track:'+id]
-      }
-    }).then(data => {
-      console.log(data);
-    });
+  playTrack (track) {
+    play.track(track.id);
+  }
+
+  playTracks (tracks) {
+    play.tracks(tracks.map(track => track.id));
   }
 
   render () {
@@ -31,10 +26,10 @@ class Tracks extends React.Component {
               <th>Title</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody onDoubleClick={this.playTracks.bind(this, this.props.tracks)}>
           {this.props.tracks.map(track =>
             <tr key={track.id}>
-              <td><a onClick={this.onPlayClick.bind(this, track.id)}>Play</a></td>
+              <td><a onClick={this.playTrack.bind(this, track)}>Play</a></td>
               <td>{track.artists.map(artist => artist.name).join(', ')}</td>
               <td>{track.album.name}</td>
               <td>{track.name}</td>
@@ -42,7 +37,7 @@ class Tracks extends React.Component {
           </tbody>
         </table>
       </div>
-    )
+    );
   }
 }
 
@@ -52,11 +47,10 @@ const getTracks = (tracks, albumId) => {
     : tracks;
 }
 
-const mapStateToProps = state => {
-  return {
-    tracks: getTracks(state.tracks, state.albumId)
-  };
-}
-
-
-export default connect(mapStateToProps, null)(Tracks);
+export default connect(
+  state => {
+    return {
+      tracks: getTracks(state.tracks, state.albumId)
+    };
+  }
+)(Tracks);

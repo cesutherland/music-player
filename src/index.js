@@ -1,13 +1,10 @@
-import React               from 'react';
-import ReactDOM            from 'react-dom';
-import axios               from 'axios';
-import router              from './router.jsx';
-import player              from './player';
-import { Provider }        from 'react-redux';
-import { createStore }     from 'redux';
-import reducers            from './reducers';
-
-let store = createStore(reducers);
+import React        from 'react';
+import ReactDOM     from 'react-dom';
+import { Provider } from 'react-redux';
+import axios        from 'axios';
+import router       from './router.jsx';
+import player       from './player';
+import store        from './store';
 
 function render(state) {
   ReactDOM.render(
