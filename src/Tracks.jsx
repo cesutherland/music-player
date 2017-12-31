@@ -55,8 +55,8 @@ const getTracks = (tracks, albumId) => {
 const mapStateToProps = state => {
   return {
     tracks: getTracks(state.tracks, state.albumId)
-  }
+  };
 }
 
 
-export default connect(mapStateToProps, null)(Tracks)
+export default connect(mapStateToProps, null)(Tracks);

@@ -1,16 +1,22 @@
 import axios   from 'axios';
 import Promise from 'promise';
 
-var resolve, reject, token, ready, tokenCallback;
+var resolve, reject, token, ready, tokenCallback, trigger;
 
-const player = new Promise((res, rej) => { resolve = res; reject = rej; });
+const player = new Promise((res, rej) => {
+  resolve = res;
+  reject = rej;
+});
 
-player.init = (oauthToken, oauthTokenCallback) => {
+player.init = (oauthToken, oauthTokenCallback, eventTrigger) => {
+  token = oauthToken;
   tokenCallback = oauthTokenCallback;
-  ready
-  ? resolve(getPlayer(oauthToken))
-  : token = oauthToken;
-}
+  trigger = eventTrigger;
+  if (ready) {
+    resolve(getPlayer(oauthToken));
+  }
+};
+
 window.onSpotifyWebPlaybackSDKReady = () =>
   token
   ? resolve(getPlayer(token))
@@ -31,7 +37,17 @@ function getPlayer (token) {
     volume: 0.5
   });
   player.connect();
+  player.on('ready', data => {
+    let { device_id } = data;
+  });
+  setInterval(() => {
+    player.getCurrentState().then(state => {
+      if (state) {
+        trigger('state', state);
+      }
+    });
+  }, 500);
   return player;
 }
 
-module.exports = player;
+module.exports = player; 

@@ -3,28 +3,11 @@ import ReactDOM            from 'react-dom';
 import axios               from 'axios';
 import router              from './router.jsx';
 import player              from './player';
-import { Provider }        from 'react-redux'
-import { createStore }     from 'redux'
-import { combineReducers } from 'redux'
+import { Provider }        from 'react-redux';
+import { createStore }     from 'redux';
+import reducers            from './reducers';
 
-let store = createStore(combineReducers({
-  albumId: (state = null, action) => {
-    switch (action.type) {
-      case 'LOAD_ALBUM':
-        return action.id;
-      default:
-        return state;
-    }
-  },
-  tracks: (state = [], action) => {
-    switch (action.type) {
-      case 'TRACKS':
-        return action.tracks;
-      default:
-        return state;
-    }
-  }
-}));
+let store = createStore(reducers);
 
 function render(state) {
   ReactDOM.render(
@@ -51,13 +34,22 @@ axios({
     }
   };
 
-  player.init(data.access_token, callback => axios({
-    method: 'get',
-    url: 'http://localhost:3000/token',
-    withCredentials: true
-  }).then(res => {
-    callback(res.data.access_token);
-  }));
+  player.init(
+    data.access_token,
+    callback => axios({
+      method: 'get',
+      url: 'http://localhost:3000/token',
+      withCredentials: true
+    }).then(res => {
+      callback(res.data.access_token);
+    }),
+    (event, data) => {
+      store.dispatch({
+        type: 'PLAYER_STATE',
+        data: data
+      });
+    }
+  );
 
   render(state);
 

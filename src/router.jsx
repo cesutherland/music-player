@@ -15,7 +15,7 @@ const routes = [
       const authentication = state.authentication;
 			return () => 
         <div>
-          <Player accessToken={authentication ? authentication.accessToken : null}></Player>
+          <Player></Player>
           <Tracks tracks={state.tracks}/>
         </div>
 		}
