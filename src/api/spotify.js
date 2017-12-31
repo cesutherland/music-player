@@ -10,14 +10,14 @@ function spotify (config) {
       };
       return this.request('get', '/me/tracks', data);
     },
-    request: (method, path, data) => axios({
+    request: (method, path, data, query) => axios({
       method: method,
       url: base+path,
       headers: {
         'Authorization': 'Bearer '+config.access_token
       },
       data: method !== 'get' ? data : null,
-      params: method === 'get' ? data : null
+      params: method === 'get' ? data : query 
     }).then(response => response.data)
   };
 }

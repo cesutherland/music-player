@@ -10,6 +10,13 @@ class PlayerState {
 }
 
 export default combineReducers({
+  playerDeviceId: (state = null, action) => {
+    switch(action.type) {
+      case 'PLAYER_DEVICE_ID':
+        return action.id;
+    }
+    return state;
+  },
   player: (state = new PlayerState, action) => {
     switch(action.type) {
       case 'PLAYER_STATE':
@@ -20,7 +27,6 @@ export default combineReducers({
         state.track = data.track_window.current_track;
         return state;
     }
-    console.log(state);
     return state;
   },
   albumId: (state = null, action) => {

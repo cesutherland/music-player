@@ -39,6 +39,7 @@ function getPlayer (token) {
   player.connect();
   player.on('ready', data => {
     let { device_id } = data;
+    trigger('deviceId', device_id);
   });
   setInterval(() => {
     player.getCurrentState().then(state => {

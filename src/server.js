@@ -115,7 +115,7 @@ app.get('/job', spotifyMiddleware, (req, res) => {
 app.all('/api/spotify/*', spotifyMiddleware, (req, res) => {
   const method = req.method.toLowerCase();
   const path = req.path.replace(/^\/api\/spotify/i, '');
-  req.spotify.request(method, path, req.body).then(
+  req.spotify.request(method, path, req.body, req.query).then(
     data => res.send(data),
     error => console.error(error.response)
   );

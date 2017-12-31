@@ -44,10 +44,16 @@ axios({
       callback(res.data.access_token);
     }),
     (event, data) => {
-      store.dispatch({
-        type: 'PLAYER_STATE',
-        data: data
-      });
+      switch (event) {
+        case 'deviceId': store.dispatch({
+          type: 'PLAYER_DEVICE_ID',
+          id: data
+        });
+        case 'state': store.dispatch({
+          type: 'PLAYER_STATE',
+          data: data
+        });
+      }
     }
   );
 
