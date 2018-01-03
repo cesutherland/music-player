@@ -7,7 +7,8 @@ class Sidebar extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      expanded: {}
+      expanded: {},
+      query: ''
     };
   }
 
@@ -27,9 +28,20 @@ class Sidebar extends React.Component {
     return albums;
   }
 
+  search (event) {
+    const query = event.target.value;
+    this.setState({query: query});
+  }
+
   render () {
 
-    const tracks = this.props.tracks;
+    const query = this.state.query.toLowerCase();
+    const match = s => s.toLowerCase().indexOf(query) !== -1;
+    const tracks = this.props.tracks.filter(track => 
+      match(track.name) ||
+      match(track.album.name) ||
+      track.artists.filter(artist => match(artist.name)).length
+    );
 
     const artists = Object.values(tracks.reduce((artists, track) => {
       track.artists.map(artist => {
@@ -41,27 +53,32 @@ class Sidebar extends React.Component {
     }, {})).sort((a, b) => a.name.localeCompare(b.name));
 
     return (
-      <ul className="explorer list-unstyled">
-      {artists.map((artist, i) => 
-        <li key={artist.id}>
-          <a
-            onClick={this.selectArtist.bind(this, artist.id)}
-            className={this.state.expanded[artist.id] ? 'expanded' : ''}
-          >
-            {artist.name}
-          </a>
-          {this.state.expanded[artist.id] &&
-            <ul className="list-unstyled">
-            {this.getArtistAlbums(artist).map(album =>
-              <li key={album.id}>
-                <a onClick={this.props.onLoadAlbum.bind(this, album.id)}>{album.name}</a>
-              </li>
-            )}
-            </ul>
-          }
-        </li>
-      )}
-      </ul>
+      <div className="browser">
+        <div class="browser-search">
+          <input type="text" value={this.state.query} className="form-control input-sm" onChange={this.search.bind(this)}/>
+        </div>
+        <ul className="explorer list-unstyled">
+        {artists.map((artist, i) => 
+          <li key={artist.id}>
+            <a
+              onClick={this.selectArtist.bind(this, artist.id)}
+              className={this.state.expanded[artist.id] ? 'expanded' : ''}
+            >
+              {artist.name}
+            </a>
+            {this.state.expanded[artist.id] &&
+              <ul className="list-unstyled">
+              {this.getArtistAlbums(artist).map(album =>
+                <li key={album.id}>
+                  <a onClick={this.props.onLoadAlbum.bind(this, album.id)}>{album.name}</a>
+                </li>
+              )}
+              </ul>
+            }
+          </li>
+        )}
+        </ul>
+      </div>
     );
   }
 }
