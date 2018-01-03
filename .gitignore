@@ -1,0 +1,4 @@
+node_modules
+public/
+dev.sqlite3
+knexfile.js
