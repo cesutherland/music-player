@@ -52,6 +52,8 @@ class Sidebar extends React.Component {
       return artists;
     }, {})).sort((a, b) => a.name.localeCompare(b.name));
 
+    const autoExpand = artists.length <= 5;
+
     return (
       <div className="browser">
         <div class="browser-search">
@@ -62,11 +64,11 @@ class Sidebar extends React.Component {
           <li key={artist.id}>
             <a
               onClick={this.selectArtist.bind(this, artist.id)}
-              className={this.state.expanded[artist.id] ? 'expanded' : ''}
+              className={autoExpand || this.state.expanded[artist.id] ? 'expanded' : ''}
             >
               {artist.name}
             </a>
-            {this.state.expanded[artist.id] &&
+            {(autoExpand || this.state.expanded[artist.id]) &&
               <ul className="list-unstyled">
               {this.getArtistAlbums(artist).map(album =>
                 <li key={album.id}>
