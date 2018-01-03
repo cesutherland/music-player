@@ -1,5 +1,6 @@
 import React from 'react';
 import player from './player';
+import play from './play';
 import { connect } from 'react-redux';
 
 class Sidebar extends React.Component {
@@ -72,7 +73,12 @@ class Sidebar extends React.Component {
               <ul className="list-unstyled">
               {this.getArtistAlbums(artist).map(album =>
                 <li key={album.id}>
-                  <a onClick={this.props.onLoadAlbum.bind(this, album.id)}>{album.name}</a>
+                  <a
+                    onClick={this.props.onLoadAlbum.bind(this, album.id)}
+                    onDoubleClick={play.album.bind(play, album.id)}
+                  >
+                    {album.name}
+                  </a>
                 </li>
               )}
               </ul>
