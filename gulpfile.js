@@ -8,17 +8,17 @@ gib(gulp, {
     middleware: [historyApiFallback()]
   },
   browserify: {
-    src: './src/index.js',
+    src: './client/index.js',
     dest: './public/app.js'
   },
   less: {
-    src: './src/index.less',
-    watch: './src/**/*.less',
+    src: './client/index.less',
+    watch: './client/**/*.less',
     dest: './public/app.css'
   },
   html: {
     name: 'assets',
-    src: './src/index.html',
+    src: './client/index.html',
     dest: './public'
   },
   fonts: {
