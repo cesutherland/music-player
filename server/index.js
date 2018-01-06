@@ -131,5 +131,11 @@ app.get('/api/tracks', (req, res) => {
     res.send(tracks.map(track => JSON.parse(track.track))));
 });
 
-
-app.listen(3000);
+const port = process.env.PORT || 3000;
+app.listen(port, function (err) {
+  if (err) {
+    console.error(err);
+  } else {
+    console.log(`server started on ${port}`);
+  }
+});
