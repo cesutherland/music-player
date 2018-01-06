@@ -96,21 +96,38 @@ app.get('/init', (req, res) => {
 });
 
 app.get('/job', spotifyMiddleware, (req, res) => {
-  const limit = 50;
-  const collectTracks = offset => 
-    req.spotify.getTracks(offset).then(data =>
-      (data.total > offset + limit)
-        ? collectTracks(offset + limit).then(tracks => tracks.concat(data.items))
-        : data.items
-    );
-  ;
-  collectTracks(0)
+
+  const storeTracks = (tracks) => {
+    const track = tracks.shift();
+    if (track) {
+      return knex('tracks').where({id: track.track.id})
+        .then(tracks => tracks.length || knex('tracks').insert({id: track.track.id, track: JSON.stringify(track.track)}))
+        .then(() => storeTracks(tracks));
+    }
+  }
+
+  const collectAllPlaylistTracks = (playlists) => {
+    const playlist = playlists.shift();
+    if (playlist) {
+      console.log('syncing', playlist.name);
+      console.log('remaining:', playlists.length);
+      return req.spotify.collectPlaylistTracks(playlist.owner.id, playlist.id)
+        .then(storeTracks)
+        .then(() => collectAllPlaylistTracks(playlists))
+    }
+  }
+
+  return req.spotify.collectPlaylists()
+    .then(collectAllPlaylistTracks)
     .then(
-      tracks =>
-        knex.batchInsert('tracks', tracks.map(track =>
-          ({id: track.track.id, track: JSON.stringify(track.track)})
-        ), 50)
-    ).then(
+      tracks => res.send('ok'),
+      error => (console.log(error) && res.send(error.response.data))
+    );
+
+  // Collecy tracks:
+  req.spotify.collectTracks()
+    .then(storeTracks)
+    .then(
       tracks => res.send('ok'),
       error => console.error(error)
     );
