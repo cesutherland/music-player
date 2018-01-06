@@ -9,6 +9,7 @@ const spotify         = require('./api/spotify');
 const oauth           = require('./api/oauth');
 const knexfile        = require('../knexfile');
 const knex            = require('knex')(knexfile.development);
+const path            = require('path');
 
 // Config:
 const app             = express();
@@ -28,9 +29,11 @@ app.use(session({
   secret: 'keyboard cat',
   saveUninitialized: true,
   resave: true,
+  /*
   store: new MemcachedStore({
     hosts: ['127.0.0.1:11211']
   })
+  */
 }));
 app.use(bodyParser.json());
 
@@ -48,9 +51,11 @@ const spotifyMiddleware = (req, res, next) => {
   next();
 };
 
-app.get('/', function (req, res) {
-  knex('tracks').select('*').then(tracks => console.log(tracks));
-  res.send('hello world: '+JSON.stringify(req.session));
+console.log(path.join(__dirname, '../public'));
+app.use('/', express.static(path.join(__dirname, '../public')))
+
+app.get('/hello', oauthMiddleware, function (req, res) {
+  res.send(['hello']);
 });
 
 app.get('/callback', oauthMiddleware, function (req, res) {
