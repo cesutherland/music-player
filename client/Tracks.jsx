@@ -33,7 +33,7 @@ class Tracks extends React.Component {
           <tbody onDoubleClick={this.playTracks.bind(this, tracks)}>
           {tracks.map(track =>
             <tr key={track.id}>
-              <td>{track.track_number}<a onClick={this.playTrack.bind(this, track)}> ▶</a></td>
+              <td>{track.disc_number}.{track.track_number}&nbsp;&nbsp;<a onClick={this.playTrack.bind(this, track)}> ▶</a></td>
               <td>{track.name}</td>
               <td>{track.artists.map(artist => artist.name).join(', ')}</td>
               <td>{track.album.name}</td>
@@ -47,7 +47,9 @@ class Tracks extends React.Component {
 
 const getTracks = (tracks, albumId) => {
   return albumId
-    ? tracks.filter(track => track.album.id === albumId)
+    ? tracks
+    .filter(track => track.album.id === albumId)
+    .sort((a, b) => (a.disc_number - b.disc_number) || (a.track_number - b.track_number))
     : [];
 }
 
