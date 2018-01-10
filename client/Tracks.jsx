@@ -20,24 +20,23 @@ class Tracks extends React.Component {
     if (!tracks.length) return <h2 className="text-center">Welcome...</h2>
 
     return (
-      <div>
-        <h2>Tracks:</h2>
+      <div className="tracks">
         <table className="table">
           <thead>
             <tr>
               <th></th>
+              <th>Title</th>
               <th>Artist</th>
               <th>Album</th>
-              <th>Title</th>
             </tr>
           </thead>
           <tbody onDoubleClick={this.playTracks.bind(this, tracks)}>
           {tracks.map(track =>
             <tr key={track.id}>
-              <td><a onClick={this.playTrack.bind(this, track)}>Play</a></td>
+              <td>{track.track_number}<a onClick={this.playTrack.bind(this, track)}> ▶</a></td>
+              <td>{track.name}</td>
               <td>{track.artists.map(artist => artist.name).join(', ')}</td>
               <td>{track.album.name}</td>
-              <td>{track.name}</td>
             </tr>)}
           </tbody>
         </table>
