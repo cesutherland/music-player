@@ -13,7 +13,7 @@ const path            = require('path');
 
 // Config:
 const app             = express();
-const web             = 'http://localhost:8080/';
+const web             = config.web.base;
 const oauthConfig = {
   client_id: config.oauth.client_id,
   redirect_uri: config.oauth.redirect_uri

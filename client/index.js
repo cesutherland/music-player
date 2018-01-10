@@ -5,6 +5,7 @@ import axios        from 'axios';
 import router       from './router.jsx';
 import player       from './player';
 import store        from './store';
+import { api }      from '../config';
 
 function render(state) {
   ReactDOM.render(
@@ -17,7 +18,7 @@ render({tracks: [], authentication:{}});
 
 axios({
   method: 'get',
-  url: 'http://localhost:3000/init',
+  url: api.base + '/init',
   withCredentials: true
 }).then(response => {
 
@@ -35,7 +36,7 @@ axios({
     data.access_token,
     callback => axios({
       method: 'get',
-      url: 'http://localhost:3000/token',
+      url: api.base + '/token',
       withCredentials: true
     }).then(res => {
       callback(res.data.access_token);
@@ -58,7 +59,7 @@ axios({
 
   axios({
     method: 'get',
-    url: 'http://localhost:3000/api/tracks',
+    url: api.base + '/api/tracks',
     withCredentials: true
   }).then(res => {
     const tracks = state.tracks = res.data;

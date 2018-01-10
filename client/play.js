@@ -1,9 +1,10 @@
 import axios from 'axios';
 import store from './store';
+import { api } from '../config';
 
 const play = data => axios({
   method: 'put',
-  url: 'http://localhost:3000/api/spotify/me/player/play?device_id='+store.getState().playerDeviceId,
+  url: api.base + '/api/spotify/me/player/play?device_id='+store.getState().playerDeviceId,
   withCredentials: true,
   data: data
 });
