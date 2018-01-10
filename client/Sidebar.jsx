@@ -1,7 +1,16 @@
-import React from 'react';
-import player from './player';
-import play from './play';
+import React       from 'react';
 import { connect } from 'react-redux';
+import filter      from './lib/filters';
+import facet       from './lib/facets';
+import play        from './play';
+
+const getArtistAlbums = (artist) => {
+  var albums = Object.values(artist.tracks.reduce((albums, track) => {
+    albums[track.album.id] = albums[track.album.id] || track.album;
+    return albums;
+  }, {})).sort((a, b) => a.name.localeCompare(b.name));
+  return albums;
+}
 
 class Sidebar extends React.Component {
 
@@ -21,14 +30,6 @@ class Sidebar extends React.Component {
     });
   }
 
-  getArtistAlbums (artist) {
-    var albums = Object.values(artist.tracks.reduce((albums, track) => {
-      albums[track.album.id] = albums[track.album.id] || track.album;
-      return albums;
-    }, {})).sort((a, b) => a.name.localeCompare(b.name));
-    return albums;
-  }
-
   search (event) {
     const query = event.target.value;
     this.setState({query: query});
@@ -36,31 +37,17 @@ class Sidebar extends React.Component {
 
   render () {
 
-    const query = this.state.query.toLowerCase();
-    const match = s => s.toLowerCase().indexOf(query) !== -1;
-    const tracks = this.props.tracks.filter(track => 
-      match(track.name) ||
-      match(track.album.name) ||
-      track.artists.filter(artist => match(artist.name)).length
-    );
-
-    const artists = Object.values(tracks.reduce((artists, track) => {
-      track.artists.map(artist => {
-        artist = artists[artist.id] = artists[artist.id] || artist;
-        artist.tracks = artist.tracks || [];
-        artist.tracks.push(track);
-      })
-      return artists;
-    }, {})).sort((a, b) => a.name.localeCompare(b.name));
+    const tracks = filter.tracks(this.props.tracks, this.state.query);
+    const artists = facet.artist(tracks).sort((a, b) => a.name.localeCompare(b.name));
 
     const autoExpand = artists.length <= 5;
 
     return (
       <div className="browser">
-        <div class="browser-search">
+        <div className="browser-search">
           <input type="text" value={this.state.query} className="form-control input-sm" onChange={this.search.bind(this)}/>
         </div>
-        <ul className="explorer list-unstyled">
+        <ul className="browser-list list-unstyled">
         {artists.map((artist, i) => 
           <li key={artist.id}>
             <a
@@ -71,7 +58,7 @@ class Sidebar extends React.Component {
             </a>
             {(autoExpand || this.state.expanded[artist.id]) &&
               <ul className="list-unstyled">
-              {this.getArtistAlbums(artist).map(album =>
+              {getArtistAlbums(artist).map(album =>
                 <li key={album.id}>
                   <a
                     onClick={this.props.onLoadAlbum.bind(this, album.id)}
@@ -90,6 +77,10 @@ class Sidebar extends React.Component {
     );
   }
 }
+
+
+
+// Controller stuff:
 
 const loadAlbum = id => {
   return {
