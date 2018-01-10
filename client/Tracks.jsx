@@ -14,6 +14,11 @@ class Tracks extends React.Component {
   }
 
   render () {
+
+    const tracks = this.props.tracks;
+
+    if (!tracks.length) return <h2 className="text-center">Welcome...</h2>
+
     return (
       <div>
         <h2>Tracks:</h2>
@@ -26,8 +31,8 @@ class Tracks extends React.Component {
               <th>Title</th>
             </tr>
           </thead>
-          <tbody onDoubleClick={this.playTracks.bind(this, this.props.tracks)}>
-          {this.props.tracks.map(track =>
+          <tbody onDoubleClick={this.playTracks.bind(this, tracks)}>
+          {tracks.map(track =>
             <tr key={track.id}>
               <td><a onClick={this.playTrack.bind(this, track)}>Play</a></td>
               <td>{track.artists.map(artist => artist.name).join(', ')}</td>
@@ -44,7 +49,7 @@ class Tracks extends React.Component {
 const getTracks = (tracks, albumId) => {
   return albumId
     ? tracks.filter(track => track.album.id === albumId)
-    : tracks;
+    : [];
 }
 
 export default connect(
