@@ -9,7 +9,7 @@ export default {
   }, {})),
 
   artist: tracks => Object.values(tracks.reduce((artists, track) => {
-    track.artists.map(artist => {
+    track.album.artists.map(artist => {
       artist = artists[artist.id] = artists[artist.id] || artist;
       artist.tracks = artist.tracks || [];
       artist.tracks.push(track);
