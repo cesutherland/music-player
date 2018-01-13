@@ -33,7 +33,7 @@ class Tracks extends React.Component {
           <tbody onDoubleClick={this.playTracks.bind(this, tracks)}>
           {tracks.map(track =>
             <tr key={track.id}>
-              <td>{track.disc_number}.{track.track_number}&nbsp;&nbsp;<a onClick={this.playTrack.bind(this, track)}> ▶</a></td>
+              <td><a onClick={this.playTrack.bind(this, track)}>▶</a>&nbsp;&nbsp;{track.disc_number}.{track.track_number}</td>
               <td>{track.name}</td>
               <td>{track.artists.map(artist => artist.name).join(', ')}</td>
               <td>{track.album.name}</td>
