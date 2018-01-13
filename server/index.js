@@ -77,7 +77,6 @@ app.use(knexMiddleware);
 app.use('/', express.static(path.join(__dirname, '../public')))
 app.get('/logout', (req, res) => {
   storeInstance.destroy(req.sessionID, (err) => {
-    console.log('here');
     res.redirect(config.web.base);
   });
 });

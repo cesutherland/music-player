@@ -1,8 +1,5 @@
-import querystring from 'querystring';
-import React     from 'react';
-import { oauth, api } from '../config';
-
-const authorizeUri = 'https://accounts.spotify.com/authorize?'+querystring.stringify(oauth);
+import React   from 'react';
+import { api } from '../config';
 
 module.exports = (props) => {
   return (
