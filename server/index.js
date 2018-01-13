@@ -23,6 +23,9 @@ const oauthConfig = {
 };
 
 const knexInstance = knex(knexfile.development);
+const storeInstance = new SessionStorage({
+  knex: knexInstance
+});
 
 const getOAuth = (userId) =>
   knexInstance('oauth')
@@ -63,10 +66,8 @@ app.use(cors({
 app.use(session({
   secret: 'keyboard cat',
   saveUninitialized: true,
-  resave: true,
-  store: new SessionStorage({
-    knex: knexInstance
-  })
+  resave: false,
+  store: storeInstance
 }));
 app.use(bodyParser.json());
 app.use(knexMiddleware);
@@ -74,6 +75,12 @@ app.use(knexMiddleware);
 
 // Bootstrap:
 app.use('/', express.static(path.join(__dirname, '../public')))
+app.get('/logout', (req, res) => {
+  storeInstance.destroy(req.sessionID, (err) => {
+    console.log('here');
+    res.redirect(config.web.base);
+  });
+});
 app.get('/init', (req, res) => {
   getOAuth(req.session.userId).then(data =>
     data
