@@ -25,7 +25,7 @@ window.onSpotifyWebPlaybackSDKReady = () =>
 function getPlayer (token) {
   var useCallback = false;
   var player = new Spotify.Player({
-    name: "Carly Rae Jepsen Player",
+    name: "altplayer",
     getOAuthToken: function (callback) {
       if (!useCallback || !tokenCallback) {
         callback(token);
@@ -44,6 +44,7 @@ function getPlayer (token) {
   setInterval(() => {
     player.getCurrentState().then(state => {
       if (state) {
+        console.log(state);
         trigger('state', state);
       }
     });
