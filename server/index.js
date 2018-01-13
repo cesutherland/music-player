@@ -15,8 +15,6 @@ const apiRoutes       = require('./routes/api');
 
 
 // Config:
-const app             = express();
-const web             = config.web.base;
 const oauthConfig = {
   client_id: config.oauth.client_id,
   client_secret: process.env.ALTPLAYER_CLIENT_SECRET,
@@ -25,8 +23,9 @@ const oauthConfig = {
 
 
 // App:
+const app = express();
 app.use(cors({
-  origin: 'http://localhost:8080',
+  origin: config.web.base,
   credentials: true
 }));
 app.use(session({
@@ -39,6 +38,7 @@ app.use(bodyParser.json());
 
 // Middleware:
 const oauthMiddleware = (req, res, next) => {
+  req.oauthDestination = config.web.base;
   req.oauth = oauth(oauthConfig);
   next();
 };

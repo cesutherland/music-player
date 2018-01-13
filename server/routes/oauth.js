@@ -4,7 +4,7 @@ module.exports = {
       data => {
         req.session.access_token = data.access_token;
         req.session.refresh_token = data.refresh_token;
-        res.redirect(web);
+        res.redirect(req.oauthDestination);
       },
       error => {
         console.error('error');
