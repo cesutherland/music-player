@@ -24,6 +24,11 @@ const oauthConfig = {
 
 const knexInstance = knex(knexfile.development);
 
+const getOAuth = (userId) =>
+  knexInstance('oauth')
+    .select('*')
+    .where({user_id: userId || null})
+    .then(oauths => { return oauths[0]; });
 
 // Middleware:
 const oauthMiddleware = (req, res, next) => {
@@ -38,12 +43,14 @@ const knexMiddleware = (req, res, next) => {
 };
 
 const spotifyMiddleware = (req, res, next) => {
-  req.spotify = spotify({
-    oauth: oauth(oauthConfig),
-    access_token: req.session.access_token,
-    refresh_token: req.session.refresh_token
+  getOAuth(req.session.userId).then(data => {
+    req.spotify = spotify({
+      oauth: oauth(oauthConfig),
+      access_token: data.access_token,
+      refresh_token: data.refresh_token
+    });
+    next();
   });
-  next();
 };
 
 
@@ -68,17 +75,15 @@ app.use(knexMiddleware);
 // Bootstrap:
 app.use('/', express.static(path.join(__dirname, '../public')))
 app.get('/init', (req, res) => {
-  const session = req.session;
-  req.knex('oauth').select('*').where({user_id: session.userId || null})
-    .then(oauths => oauths[0])
-    .then(oauth => oauth
-      ? res.send({
-        email: session.email,
-        access_token: oauth.access_token
-      })
-      : res.send({
-      })
-    );
+  getOAuth(req.session.userId).then(data =>
+    data
+    ? res.send({
+      email: session.email,
+      access_token: data.access_token
+    })
+    : res.send({
+    })
+  );
 });
 
 

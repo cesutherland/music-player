@@ -33,7 +33,7 @@ function spotify (config) {
   });
 
   const getPlaylists = (offset, limit) => getList('/me/playlists', offset, limit);
-  const getTracks    = (offset, limit) => getList('me/tracks', offset, limit);
+  const getTracks    = (offset, limit) => getList('/me/tracks', offset, limit);
   const getMe        = ()              => request('get', '/me');
 
   return {

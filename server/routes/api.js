@@ -8,7 +8,14 @@ module.exports = {
     );
   },
   tracks: (req, res) => {
-    req.knex('tracks').select('*').then(tracks =>
-      res.send(tracks.map(track => JSON.parse(track.track))));
+    req.knex('tracks')
+      .select('*')
+      .join('user_tracks', 'tracks.id', '=', 'user_tracks.track_id')
+      .where({
+        'user_tracks.user_id': req.session.userId
+      })
+      .then(tracks =>
+        res.send(tracks.map(track => JSON.parse(track.track)))
+      );
   }
 };
