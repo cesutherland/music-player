@@ -1,5 +1,4 @@
 import { combineReducers } from 'redux';
-import player from './player';
 
 class PlayerState {
   constructor () {
@@ -20,9 +19,6 @@ export default combineReducers({
   },
   player: (state = new PlayerState, action) => {
     switch(action.type) {
-      case 'PLAYER_TOGGLE':
-        player.then(player => player.togglePlay());
-        break;
       case 'PLAYER_STATE':
         const data = action.data;
         state = new PlayerState;

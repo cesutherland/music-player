@@ -12,7 +12,7 @@ body {
   padding-left: @controls-width;
   margin-bottom: 28px;
   .player-controls {
-    padding-top: 32px;
+    padding-top: 35px;
     font-size: 24px;
     text-align: center;
     position: absolute;
@@ -21,7 +21,7 @@ body {
     left: 0px;
   }
   .player-info {
-    padding: 12px 8px;
+    padding: 14px 0px 8px;
     font-size: 0.9em;
     text-align: center;
   }
@@ -31,27 +31,29 @@ body {
     font-family: monospace;
     font-size: 0.75em;
     height: 20px;
-    .player-position {
-      position: absolute;
-      left: 0px;
-      text-align: center;
-      width: @scrubber-padding; 
-    }
+    .player-position,
     .player-duration {
       position: absolute;
-      right: 0px;
       text-align: center;
       width: @scrubber-padding; 
+      top: 3px;
     }
-    .player-progress {
+    .player-position {
+      left: 0px;
+    }
+    .player-duration {
+      right: 0px;
+    }
+    .player-scrub {
       position: absolute;
       left: @scrubber-padding;
       right: @scrubber-padding;
-      top: 5px;
+      padding: 8px 0px;
     }
   }
   .progress {
-    height: 4px;
+    margin: 0px;
+    height: 5px;
     .progress-bar {
       transition: width 0.0s linear;
     }
