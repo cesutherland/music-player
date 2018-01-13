@@ -5,6 +5,7 @@ const bodyParser      = require('body-parser');
 const cors            = require('cors')
 const path            = require('path');
 const knex            = require('knex');
+const SessionStorage  = require('connect-session-knex')(session);
 const config          = require('../config');
 const knexfile        = require('../knexfile');
 const spotify         = require('./api/spotify');
@@ -31,7 +32,10 @@ app.use(cors({
 app.use(session({
   secret: 'keyboard cat',
   saveUninitialized: true,
-  resave: true
+  resave: true,
+  store: new SessionStorage({
+    knex: knex(knexfile.development)
+  })
 }));
 app.use(bodyParser.json());
 
