@@ -3,7 +3,9 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 class Player extends React.Component {
+
   render() {
+
     const props      = this.props;
     const player    = props.player;
     const track     = player.track;
@@ -11,6 +13,8 @@ class Player extends React.Component {
     const emptyTime = '--:--';
     const position  = player.duration ? moment(player.position).format(format) : emptyTime;
     const duration  = player.duration ? moment(player.duration).format(format) : emptyTime;
+    const progress  = (player.duration && player.position / player.duration) * 100 || 0;
+    
     return (
       <div className="player">
         <div className="player-controls">
@@ -22,8 +26,21 @@ class Player extends React.Component {
             : ''
           }
         </div>
-        <div>Playing: {track.name || '-'}</div>
-        <div>Position: {position} / {duration}</div>
+        <div className="player-info">{track.name || ''}&nbsp;</div>
+        <div className="player-scrubber">
+          <div className="player-position">{position}</div>
+          <div className="player-progress progress">
+            <div
+              className="progress-bar"
+              role="progressbar"
+              aria-valuenow={position}
+              aria-valuemin='00:00'
+              aria-valuemax={duration}
+              style={{width: progress + '%'}}
+            ></div>
+          </div>
+          <div className="player-duration">{duration}</div>
+        </div>
       </div>
     );
   }
@@ -36,7 +53,6 @@ const mapStateToProps = state => {
 }
 
 const toggle = () => {
-  console.log('here');
   return {
     type: 'PLAYER_TOGGLE'
   }

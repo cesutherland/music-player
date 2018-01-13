@@ -10,14 +10,51 @@ body {
   @controls-width: 40px;
   position: relative;
   padding-left: @controls-width;
+  margin-bottom: 28px;
   .player-controls {
-    padding-top: 4px;
+    padding-top: 32px;
     font-size: 24px;
     text-align: center;
     position: absolute;
     width: @controls-width;
     height: 40px;
     left: 0px;
+  }
+  .player-info {
+    padding: 12px 8px;
+    font-size: 0.9em;
+    text-align: center;
+  }
+  .player-scrubber {
+    @scrubber-padding: 75px;
+    position: relative;
+    font-family: monospace;
+    font-size: 0.75em;
+    height: 20px;
+    .player-position {
+      position: absolute;
+      left: 0px;
+      text-align: center;
+      width: @scrubber-padding; 
+    }
+    .player-duration {
+      position: absolute;
+      right: 0px;
+      text-align: center;
+      width: @scrubber-padding; 
+    }
+    .player-progress {
+      position: absolute;
+      left: @scrubber-padding;
+      right: @scrubber-padding;
+      top: 5px;
+    }
+  }
+  .progress {
+    height: 4px;
+    .progress-bar {
+      transition: width 0.0s linear;
+    }
   }
 }
 
