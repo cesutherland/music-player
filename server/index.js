@@ -22,7 +22,7 @@ const oauthConfig = {
   redirect_uri: config.oauth.redirect_uri
 };
 
-const knexInstance = knex(knexfile.development);
+const knexInstance = knex(knexfile[process.env.NODE_ENV || 'development']);
 const storeInstance = new SessionStorage({
   knex: knexInstance
 });

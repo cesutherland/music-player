@@ -14,12 +14,14 @@ const getOptions = options => {
   const name = options.parent.name || 'dev';
   return {
     name: name,
-    instanceType: 't2.nano',
+    instanceType: 't2.micro',
     stackName: `altplayer-stack-${name}`,
     solutionStack: '64bit Amazon Linux 2017.09 v4.4.2 running Node.js',
     environment: options.parent.environment || 'dev',
     database: {
-      name: 'altplayer'
+      name: 'altplayer',
+      username: 'altplayer',
+      password: process.env.ALTPLAYER_DB_PASSWORD
     }
   };
 };

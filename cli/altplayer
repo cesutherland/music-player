@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 'use strict';
 
-const VERSION   = require('./package.json').version;
 const program   = require('commander');
+const VERSION   = require('./package.json').version;
 const commands  = require('./util');
 
 program
@@ -10,13 +10,11 @@ program
   .option('-n, --name [value]', 'The AWS stack name.  Will server as a prefix for resources related to the stack.')
   .option('-e, --environment [value]', 'Environment name (latest, development, production).')
   .option('-j, --jwt-secret [value]', 'Password for JWT.')
-  .option('--db-password [value]', 'Password for Wavestash API database.')
   .option('--tracks-bucket [value]', 'Name of S3 bucket for storing tracks.')
   .option('--encoded-tracks-bucket [value]', 'Name of S3 bucket for storing encoded tracks.')
   .option('--apps-bucket [value]', 'Name of S3 bucket for storing deployed apps for ElasticBeanstalk.')
   .option('--api-instance-type [value]', 'Instance type for the API (t1.micro, etc.).')
   .option('--client-instance-type [value]', 'Instance type for the client (t1.micro, etc.).')
-  .option('--db-instance-type [value]', 'Instance type for the API database (t1.micro, etc.).')
   .option('--api-cname [value]', 'The ElasticBeanstalk CNAME for the API service.')
   .option('--client-cname [value]', 'The ElasticBeanstalk CNAME for the client.')
   .option('--ssl-api-name [value]', 'The name of the SSL resource to be used for the API.')

@@ -5,6 +5,7 @@ set -v;
 
 mkdir -p build;
 cp -R public         build/
+cp -R migrations     build/
 cp -R server         build/
 cp -R config.js      build/
 cp -R node_modules   build/

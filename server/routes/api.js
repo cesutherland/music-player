@@ -14,8 +14,9 @@ module.exports = {
       .where({
         'user_tracks.user_id': req.session.userId
       })
-      .then(tracks =>
-        res.send(tracks.map(track => JSON.parse(track.track)))
+      .then(
+        tracks => res.send(tracks.map(track => JSON.parse(track.track))),
+        error => console.error(error)
       );
   }
 };
