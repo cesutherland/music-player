@@ -76,16 +76,22 @@ const token = (req, res) => getOAuth(req)
       if (data.refresh_token) {
         update.refresh_token = data.refresh_token;
       }
-      req.knex('oauth')
+      console.log(update);
+      console.log({
+        user_id: req.session.userId,
+        key: 'spotify'
+      });
+      return req.knex('oauth')
         .update(update)
         .where({
           user_id: req.session.userId,
           key: 'spotify'
+        }).then(() => {
+          req.session.access_token = data.access_token;
+          res.send({
+            access_token: req.session.access_token
+          });
         });
-      req.session.access_token = data.access_token;
-      res.send({
-        access_token: req.session.access_token
-      });
     },
     error => {
       console.error('error');
