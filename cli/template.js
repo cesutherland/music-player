@@ -103,5 +103,6 @@ module.exports = options => ({
         }
       }
     }
+    // TODO: security groups for DB and EC2
   }
 });
