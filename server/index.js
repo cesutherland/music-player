@@ -79,7 +79,7 @@ app.get('/init', knexMiddleware, (req, res) => {
   oauthRoutes.getOAuth(req).then(data =>
     data
     ? res.send({
-      email: session.email,
+      email: data.email,
       access_token: data.access_token
     })
     : res.send({
