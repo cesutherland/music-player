@@ -1,12 +1,17 @@
 const spotifyAPI = require('../api/spotify');
 
+const getOAuth = (req) =>
+  req.knex('oauth')
+    .select('*')
+    .where({user_id: req.session.userId || null})
+    .then(oauths => { return oauths[0]; });
+
 const initSession = (req, user, accessToken, refreshToken) => {
   const knex = req.knex;
   const session = req.session;
   session.userId = user.id;
   session.email = user.email;
-  return knex('oauth').select('*').where({user_id: user.id}).then(oauths => {
-    const oauth = oauths[0];
+  getOAuth(req).then(oauth => {
     if (!oauth) {
       return knex('oauth').insert({
         user_id: user.id,
@@ -36,6 +41,8 @@ const callback = (req, res) => req.oauth.token(req.query.code).then(
       refresh_token: refreshToken
     });
 
+    console.error(data);
+
     // Get session user:
     spotify.getMe().then(me => {
       knex('users').select('*').where({email: me.email}).then(users => {
@@ -58,20 +65,36 @@ const callback = (req, res) => req.oauth.token(req.query.code).then(
   }
 );
 
-const token = (req, res) => req.oauth.refresh(req.session.refresh_token).then(
-  data => {
-    req.session.access_token = data.access_token;
-    res.send({
-      access_token: req.session.access_token
-    });
-  },
-  error => {
-    console.error('error');
-    console.log(error.response);
-  }
-);
+const token = (req, res) => getOAuth(req)
+  .then(oauth => oauth && req.oauth.refresh(oauth.refresh_token))
+  .then(
+    data => {
+      const update = {
+        access_token: data.access_token,
+        connected: true
+      };
+      if (data.refresh_token) {
+        update.refresh_token = data.refresh_token;
+      }
+      req.knex('oauth')
+        .update(update)
+        .where({
+          user_id: req.session.userId,
+          key: 'spotify'
+        });
+      req.session.access_token = data.access_token;
+      res.send({
+        access_token: req.session.access_token
+      });
+    },
+    error => {
+      console.error('error');
+      console.log(error.response);
+    }
+  );
 
 module.exports = {
+  getOAuth,
   callback,
   token
 };

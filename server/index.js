@@ -27,12 +27,6 @@ const storeInstance = new SessionStorage({
   knex: knexInstance
 });
 
-const getOAuth = (userId) =>
-  knexInstance('oauth')
-    .select('*')
-    .where({user_id: userId || null})
-    .then(oauths => { return oauths[0]; });
-
 // Middleware:
 const oauthMiddleware = (req, res, next) => {
   req.oauthDestination = config.web.base;
@@ -46,7 +40,7 @@ const knexMiddleware = (req, res, next) => {
 };
 
 const spotifyMiddleware = (req, res, next) => {
-  getOAuth(req.session.userId).then(data => {
+  oauthRoutes.getOAuth(req).then(data => {
     req.spotify = spotify({
       oauth: oauth(oauthConfig),
       access_token: data.access_token,
@@ -65,6 +59,7 @@ app.use(cors({
 }));
 app.use(session({
   secret: 'keyboard cat',
+
   saveUninitialized: true,
   resave: false,
   store: storeInstance
@@ -80,8 +75,8 @@ app.get('/logout', (req, res) => {
     res.redirect(config.web.base);
   });
 });
-app.get('/init', (req, res) => {
-  getOAuth(req.session.userId).then(data =>
+app.get('/init', knexMiddleware, (req, res) => {
+  oauthRoutes.getOAuth(req).then(data =>
     data
     ? res.send({
       email: session.email,
@@ -94,12 +89,12 @@ app.get('/init', (req, res) => {
 
 
 // OAuth2:
-app.get('/callback', oauthMiddleware, oauthRoutes.callback);
-app.get('/token', oauthMiddleware, oauthRoutes.token);
+app.get('/callback', knexMiddleware, oauthMiddleware, oauthRoutes.callback);
+app.get('/token', knexMiddleware, oauthMiddleware, oauthRoutes.token);
 
 
 // Jobs:
-app.get('/job', spotifyMiddleware, jobRoutes.job);
+app.get('/job', knexMiddleware, spotifyMiddleware, jobRoutes.job);
 
 
 // API:
