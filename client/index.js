@@ -14,7 +14,7 @@ function render(state) {
   );
 }
 
-render({tracks: [], authentication:{}});
+store.subscribe(() => render(store.getState()));
 
 axios({
   method: 'get',
@@ -24,12 +24,14 @@ axios({
 
   const data = response.data;
   const loggedIn = data.access_token ? true : false;
+  const authentication = {
+    loggedIn: loggedIn,
+    accessToken: data.access_token,
+    email: data.email
+  };
   const state = {
     tracks: [],
-    authentication: {
-      loggedIn: loggedIn,
-      accessToken: data.access_token
-    }
+    authentication: authentication
   };
 
   player.init(
@@ -55,7 +57,7 @@ axios({
     }
   );
 
-  render(state);
+  store.dispatch({type: 'AUTHENTICATION', authentication});
 
   axios({
     method: 'get',

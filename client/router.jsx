@@ -15,18 +15,17 @@ const routes = [
     exact: true,
     path: '/',
     name: 'Home',
-    component: (state) => {
-      const authentication = state.authentication;
+    component: () => {
 			return () => 
         <div>
           <Player></Player>
-          <Tracks tracks={state.tracks}/>
+          <Tracks />
         </div>
 		}
   }
 ];
 
-module.exports = (state) => (
+const router = (state) => (
   <Router>
     {state.authentication.loggedIn ?
       layout(
@@ -45,3 +44,4 @@ module.exports = (state) => (
   </Router>
 );
 
+module.exports = router;

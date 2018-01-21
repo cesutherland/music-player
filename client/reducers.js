@@ -10,6 +10,12 @@ class PlayerState {
 }
 
 export default combineReducers({
+  authentication: (state = {}, action) => {
+    switch(action.type) {
+      case 'AUTHENTICATION': return action.authentication;
+    }
+    return state;
+  },
   playerDeviceId: (state = null, action) => {
     switch(action.type) {
       case 'PLAYER_DEVICE_ID':

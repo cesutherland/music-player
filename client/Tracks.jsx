@@ -17,7 +17,7 @@ class Tracks extends React.Component {
 
     const tracks = this.props.tracks;
 
-    if (!tracks.length) return <h2 className="text-center">Welcome...</h2>
+    if (!tracks.length) return <h2 className="text-center">welcome {this.props.authentication.email}</h2>
 
     return (
       <div className="tracks">
@@ -56,7 +56,8 @@ const getTracks = (tracks, albumId) => {
 export default connect(
   state => {
     return {
-      tracks: getTracks(state.tracks, state.albumId)
+      tracks: getTracks(state.tracks, state.albumId),
+      authentication: state.authentication
     };
   }
 )(Tracks);
