@@ -28,8 +28,8 @@ function spotify (config) {
     offset = 0,
     limit = 50
   ) => request('get', path, {
-    offset: offset ? offset : 0,
-    limit: limit ? limit : 50
+    offset: offset,
+    limit: limit
   });
 
   const getPlaylists = (offset, limit) => getList('/me/playlists', offset, limit);
