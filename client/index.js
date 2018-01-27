@@ -2,6 +2,7 @@ import React        from 'react';
 import ReactDOM     from 'react-dom';
 import { Provider } from 'react-redux';
 import axios        from 'axios';
+import socket       from 'socket.io-client';
 import router       from './router.jsx';
 import player       from './player';
 import store        from './store';
@@ -13,6 +14,10 @@ function render(state) {
     document.getElementById('layout')
   );
 }
+
+// Socket connection
+const connection = socket(api.base);
+connection.on('event', function(data){});
 
 store.subscribe(() => render(store.getState()));
 

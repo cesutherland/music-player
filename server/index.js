@@ -1,11 +1,13 @@
 // Modules:
 const express         = require('express');
-const session         = require('express-session')
 const bodyParser      = require('body-parser');
 const cors            = require('cors')
 const path            = require('path');
 const knex            = require('knex');
-const SessionStorage  = require('connect-session-knex')(session);
+const socketio        = require('socket.io');
+const http            = require('http');
+const Session         = require('express-session')
+const SessionStorage  = require('connect-session-knex')(Session);
 const config          = require('../config');
 const knexfile        = require('../knexfile');
 const spotify         = require('./api/spotify');
@@ -53,19 +55,39 @@ const spotifyMiddleware = (req, res, next) => {
 
 // App:
 const app = express();
+const server = http.createServer(app);
+const session = Session({
+  secret: 'keyboard cat',
+  saveUninitialized: true,
+  resave: false,
+  store: storeInstance
+});
+
 app.use(cors({
   origin: config.web.base,
   credentials: true
 }));
-app.use(session({
-  secret: 'keyboard cat',
-
-  saveUninitialized: true,
-  resave: false,
-  store: storeInstance
-}));
+app.use(session);
 app.use(bodyParser.json());
 app.use(knexMiddleware);
+
+
+// Io:
+const io = socketio(server);
+const ioMiddleware = (req, res, next) => {
+  req.io = io;
+  req.getSocket = () => io.sessions[req.sessionID];
+  next();
+};
+io.use(function(socket, next) {
+  session(socket.handshake, {}, next);
+});
+io.sessions = {};
+io.on('connection', (socket) => {
+  const sessionID = socket.handshake.sessionID;
+  io.sessions[sessionID] = socket;
+  socket.on('disconnect', () => delete io.sessions[sessionID]);
+});
 
 
 // Bootstrap:
@@ -94,7 +116,7 @@ app.get('/token', knexMiddleware, oauthMiddleware, oauthRoutes.token);
 
 
 // Jobs:
-app.get('/job', knexMiddleware, spotifyMiddleware, jobRoutes.job);
+app.get('/job', knexMiddleware, spotifyMiddleware, ioMiddleware, jobRoutes.job);
 
 
 // API:
@@ -104,7 +126,7 @@ app.get('/api/tracks', apiRoutes.tracks);
 
 // Start server:
 const port = process.env.PORT || 3000;
-app.listen(port, function (err) {
+server.listen(port, function (err) {
   if (err) {
     console.error(err);
   } else {

@@ -5,7 +5,6 @@ module.exports = {
     const spotify = req.spotify;
     const userId = req.session.userId;
 
-
     const storeTracks = (tracks, callback) => {
       const track = tracks.shift();
       if (track) {
@@ -63,7 +62,11 @@ module.exports = {
     // Collect tracks:
     return getMetadata().then(metadata => {
       const updateJob = (callback) => () => {
+        const socket = req.getSocket();
         callback();
+        if (socket) {
+          socket.emit('job-progress', metadata);
+        }
         console.log(metadata);
       };
       return spotify
