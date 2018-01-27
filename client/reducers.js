@@ -16,6 +16,18 @@ export default combineReducers({
     }
     return state;
   },
+  jobProgress: (state = null, action) => {
+    switch(action.type) {
+      case 'JOB_PROGRESS': return action.jobProgress;
+    }
+    return state;
+  },
+  job: (state = null, action) => {
+    switch(action.type) {
+      case 'JOB': return action.job;
+    }
+    return state;
+  },
   playerDeviceId: (state = null, action) => {
     switch(action.type) {
       case 'PLAYER_DEVICE_ID':

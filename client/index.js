@@ -15,10 +15,6 @@ function render(state) {
   );
 }
 
-// Socket connection
-const connection = socket(api.base);
-connection.on('event', function(data){});
-
 store.subscribe(() => render(store.getState()));
 
 axios({
@@ -35,9 +31,34 @@ axios({
     email: data.email
   };
   const state = {
+    job: data.job,
     tracks: [],
     authentication: authentication
   };
+
+  if (!loggedIn) {
+    render(state);
+    return;
+  }
+
+  const getJob = () => axios({
+    method: 'get',
+    url: api.base + '/job',
+    withCredentials: true
+  }).then(job => store.dispatch({type: 'JOB', job}));
+
+  // Socket connection
+  const connection = socket(api.base);
+  connection.on('job-progress', jobProgress => {
+    store.dispatch({type: 'JOB_PROGRESS', jobProgress})
+    if (jobProgress.playlists.progress == jobProgress.playlists.total) {
+      window.location.reload();
+    }
+  });
+
+  store.dispatch({type: 'AUTHENTICATION', authentication});
+
+  if (!state.job) getJob();
 
   player.init(
     data.access_token,
@@ -61,8 +82,6 @@ axios({
       }
     }
   );
-
-  store.dispatch({type: 'AUTHENTICATION', authentication});
 
   axios({
     method: 'get',

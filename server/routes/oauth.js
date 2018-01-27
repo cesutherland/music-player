@@ -42,8 +42,6 @@ const callback = (req, res) => req.oauth.token(req.query.code).then(
       refresh_token: refreshToken
     });
 
-    console.error(data);
-
     // Get session user:
     spotify.getMe().then(me => {
       knex('users').select('*').where({email: me.email}).then(users => {

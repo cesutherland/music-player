@@ -101,13 +101,19 @@ app.get('/logout', (req, res) => {
 });
 app.get('/init', knexMiddleware, (req, res) => {
   oauthRoutes.getOAuth(req).then(data =>
-    data
-    ? res.send({
-      email: data.email,
-      access_token: data.access_token
-    })
-    : res.send({
-    })
+    !data
+    ? res.send({})
+    : knexInstance('jobs')
+      .where({
+        user_id: req.session.userId || null
+      })
+      .limit(1)
+      .orderBy('id', 'desc')
+      .then(jobs => res.send({
+        job: jobs[0] || null,
+        email: data.email,
+        access_token: data.access_token
+      }))
   );
 });
 
