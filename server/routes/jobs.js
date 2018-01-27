@@ -5,6 +5,53 @@ module.exports = {
     const spotify = req.spotify;
     const userId = req.session.userId;
 
+		const findJob = () => knex('jobs').where({
+        user_id: userId,
+        key: 'spotify-import',
+        finished: null
+      })
+      .then(jobs => jobs[0]);
+
+		const startJob = () => knex('jobs').insert({
+        user_id: userId,
+        key: 'spotify-import',
+        created: new Date(),
+        job: {}
+      })
+			.then(findJob)
+      .then(job => {
+
+				// Collect tracks:
+				getMetadata().then(metadata => {
+					const updateJob = (callback) => () => {
+						const socket = req.getSocket();
+						callback();
+						if (socket) {
+							socket.emit('job-progress', metadata);
+						}
+					};
+					return spotify
+						.collectTracks()
+						.then(tracks => storeTracks(tracks, updateJob(() => metadata.tracks.progress++)))
+						.then(() => spotify.collectPlaylists())
+						.then(playlists => { console.log('playlists: '+playlists.length); return playlists; })
+						.then(playlists => collectAllPlaylistTracks(playlists, updateJob(() => metadata.playlists.progress++)))
+						.then(tracks => null, error => error)
+            .then(error => knex('jobs')
+              .where({id: job.id})
+              .update({
+                finished: new Date(),
+                job: {
+                  error: error
+                }
+              })
+            );
+				});
+
+				return job;
+			});
+
+
     const storeTracks = (tracks, callback) => {
       const track = tracks.shift();
       if (track) {
@@ -59,26 +106,8 @@ module.exports = {
         .then(() => metadata);
     };
 
-    // Collect tracks:
-    return getMetadata().then(metadata => {
-      const updateJob = (callback) => () => {
-        const socket = req.getSocket();
-        callback();
-        if (socket) {
-          socket.emit('job-progress', metadata);
-        }
-        console.log(metadata);
-      };
-      return spotify
-        .collectTracks()
-        .then(tracks => storeTracks(tracks, updateJob(() => metadata.tracks.progress++)))
-        .then(() => spotify.collectPlaylists())
-        .then(playlists => { console.log('playlists: '+playlists.length); return playlists; })
-        .then(playlists => collectAllPlaylistTracks(playlists, updateJob(() => metadata.playlists.progress++)))
-        .then(
-          tracks => res.send('ok'),
-          error => (console.log(error.response || error) && res.send(error.response.data))
-        );
-    });
+    return findJob()
+      .then(job => (job || startJob()))
+      .then(job => res.send(job));
   }
 };

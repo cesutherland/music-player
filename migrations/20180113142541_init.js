@@ -1,7 +1,6 @@
 
 exports.up = function(knex, Promise) {
   return Promise.all([
-
     knex.schema.createTable('oauth', function (table) {
       table.increments('id').primary().index();
       table.integer('user_id').index();

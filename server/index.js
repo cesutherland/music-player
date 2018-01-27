@@ -76,17 +76,19 @@ app.use(knexMiddleware);
 const io = socketio(server);
 const ioMiddleware = (req, res, next) => {
   req.io = io;
-  req.getSocket = () => io.sessions[req.sessionID];
+  req.getSocket = () => io.users[req.session.userId];
   next();
 };
 io.use(function(socket, next) {
   session(socket.handshake, {}, next);
 });
-io.sessions = {};
+io.users = {};
 io.on('connection', (socket) => {
-  const sessionID = socket.handshake.sessionID;
-  io.sessions[sessionID] = socket;
-  socket.on('disconnect', () => delete io.sessions[sessionID]);
+  const userId = socket.handshake.session.userId;
+  if (userId) {
+    io.users[userId] = socket;
+    socket.on('disconnect', () => delete io.users[userId]);
+  }
 });
 
 
