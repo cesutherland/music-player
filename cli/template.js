@@ -21,6 +21,8 @@ module.exports = options => ({
           { 'Namespace': 'aws:autoscaling:asg', 'OptionName': 'MinSize', 'Value': '1' },
           { 'Namespace': 'aws:autoscaling:asg', 'OptionName': 'MaxSize', 'Value': '1' },
 
+          { 'Namespace': 'aws:elasticbeanstalk:environment', 'OptionName': 'LoadBalancerType', 'Value': 'application' },
+
           /*
           { 'Namespace': 'aws:elb:loadbalancer', 'OptionName': 'LoadBalancerHTTPSPort', 'Value': '443' },
           { 'Namespace': 'aws:elb:loadbalancer', 'OptionName': 'LoadBalancerHTTPPort', 'Value': 'OFF' },
