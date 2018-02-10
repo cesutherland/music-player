@@ -73,7 +73,7 @@ app.use(knexMiddleware);
 
 
 // Io:
-const io = socketio(server);
+const io = socketio(server, {transports: ['polling']});
 const ioMiddleware = (req, res, next) => {
   req.io = io;
   req.getSocket = () => io.users[req.session.userId];
