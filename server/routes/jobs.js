@@ -8,7 +8,7 @@ module.exports = {
 		const findJob = () => knex('jobs').where({
         user_id: userId,
         key: 'spotify-import',
-        finished: null
+        finished: false
       })
       .then(jobs => jobs[0]);
 
@@ -16,7 +16,7 @@ module.exports = {
         user_id: userId,
         key: 'spotify-import',
         created: new Date(),
-        job: {}
+        job: '{}'
       })
 			.then(findJob)
       .then(job => {
@@ -108,6 +108,9 @@ module.exports = {
 
     return findJob()
       .then(job => (job || startJob()))
-      .then(job => res.send(job));
+      .then(
+        job => res.send(job),
+        error => { console.error(error); res.send(400) }
+      );
   }
 };
