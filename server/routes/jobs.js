@@ -8,7 +8,7 @@ module.exports = {
 		const findJob = () => knex('jobs').where({
         user_id: userId,
         key: 'spotify-import',
-        finished: false
+        finished: null
       })
       .then(jobs => jobs[0]);
 
@@ -20,6 +20,8 @@ module.exports = {
       })
 			.then(findJob)
       .then(job => {
+
+        if (!job) console.error('no job');
 
 				// Collect tracks:
 				getMetadata().then(metadata => {
@@ -41,9 +43,9 @@ module.exports = {
               .where({id: job.id})
               .update({
                 finished: new Date(),
-                job: {
+                job: JSON.stringify({
                   error: error
-                }
+                })
               })
             );
 				});
@@ -107,7 +109,7 @@ module.exports = {
     };
 
     return findJob()
-      .then(job => (job || startJob()))
+      .then(job => { return job || startJob(); })
       .then(
         job => res.send(job),
         error => { console.error(error); res.send(400) }
