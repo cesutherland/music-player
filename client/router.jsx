@@ -50,7 +50,7 @@ const jobWidget = (job, jobProgress) =>  {
 const router = (state) => (
   <Router>
     {state.authentication.loggedIn
-      ? (state.job && state.job.finished
+      ? (!state.job || state.job.finished
         ? layout(
           state,
           routes,
