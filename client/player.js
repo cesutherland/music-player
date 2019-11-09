@@ -52,4 +52,4 @@ function getPlayer (token) {
   return player;
 }
 
-module.exports = player; 
+export default player; 

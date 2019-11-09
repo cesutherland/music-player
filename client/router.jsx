@@ -1,7 +1,7 @@
 import querystring                 from 'querystring';
 import React                       from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { layout }                  from 'react-sidebar-layout';
+import layout                      from 'react-sidebar-layout';
 import Login                       from './Login.jsx';
 import Player                      from './Player.jsx';
 import Tracks                      from './Tracks.jsx';
@@ -71,4 +71,4 @@ const router = (state) => (
   </Router>
 );
 
-module.exports = router;
+export default router;

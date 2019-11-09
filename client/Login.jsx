@@ -1,7 +1,7 @@
 import React   from 'react';
 import { api } from '../config';
 
-module.exports = (props) => {
+export default (props) => {
   return (
     !props.loggedIn
       ?
