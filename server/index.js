@@ -89,7 +89,7 @@ io.on('connection', (socket) => {
 
 // Routes:
 app.use('/', express.static(path.join(__dirname, '../public')))
-routes(app, knexMiddleware, oauthMiddleware, spotifyMiddleware, ioMiddleware);
+routes(app, oauthMiddleware, spotifyMiddleware, ioMiddleware);
 
 // Start server:
 const port = process.env.PORT || 3000;

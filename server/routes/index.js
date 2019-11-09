@@ -9,7 +9,6 @@ const apiRoutes   = require('./api');
 
 const routes = (
   app,
-  knexMiddleware,
   oauthMiddleware,
   spotifyMiddleware,
   ioMiddleware
@@ -17,14 +16,14 @@ const routes = (
 
   // App:
   app.get('/logout', appRoutes.logout);
-  app.get('/init', knexMiddleware, appRoutes.init);
+  app.get('/init', appRoutes.init);
 
   // OAuth2:
-  app.get('/callback', knexMiddleware, oauthMiddleware, oauthRoutes.callback);
-  app.get('/token', knexMiddleware, oauthMiddleware, oauthRoutes.token);
+  app.get('/callback', oauthMiddleware, oauthRoutes.callback);
+  app.get('/token', oauthMiddleware, oauthRoutes.token);
 
   // Jobs:
-  app.get('/job', knexMiddleware, spotifyMiddleware, ioMiddleware, jobRoutes.job);
+  app.get('/job', spotifyMiddleware, ioMiddleware, jobRoutes.job);
 
   // API:
   app.all('/api/spotify/*', spotifyMiddleware, apiRoutes.spotify);
