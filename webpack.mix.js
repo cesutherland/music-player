@@ -1,7 +1,7 @@
 const mix = require('laravel-mix');
 
 // Override font output dir for webpack file-loader?
-mix.config.fileLoaderDirs.fonts = 'public/fonts';
+mix.config.publicPath = 'public';
 
 mix
   .react('client/index.js', 'public/app.js')
