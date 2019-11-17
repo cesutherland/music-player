@@ -12,9 +12,7 @@ const config          = require('../config');
 const knexfile        = require('../knexfile');
 const spotify         = require('./api/spotify');
 const oauth           = require('./api/oauth');
-const oauthRoutes     = require('./routes/oauth');
-const jobRoutes       = require('./routes/jobs');
-const apiRoutes       = require('./routes/api');
+const routes          = require('./routes');
 
 
 // Config:
@@ -52,7 +50,6 @@ const spotifyMiddleware = (req, res, next) => {
   });
 };
 
-
 // App:
 const app = express();
 const server = http.createServer(app);
@@ -70,7 +67,6 @@ app.use(cors({
 app.use(session);
 app.use(bodyParser.json());
 app.use(knexMiddleware);
-
 
 // Io:
 const io = socketio(server, {transports: ['polling']});
@@ -91,46 +87,9 @@ io.on('connection', (socket) => {
   }
 });
 
-
-// Bootstrap:
+// Routes:
 app.use('/', express.static(path.join(__dirname, '../public')))
-app.get('/logout', (req, res) => {
-  storeInstance.destroy(req.sessionID, (err) => {
-    res.redirect(config.web.base);
-  });
-});
-app.get('/init', knexMiddleware, (req, res) => {
-  oauthRoutes.getOAuth(req).then(data =>
-    !data
-    ? res.send({})
-    : knexInstance('jobs')
-      .where({
-        user_id: req.session.userId || null
-      })
-      .limit(1)
-      .orderBy('id', 'desc')
-      .then(jobs => res.send({
-        job: jobs[0] || null,
-        email: data.email,
-        access_token: data.access_token
-      }))
-  );
-});
-
-
-// OAuth2:
-app.get('/callback', knexMiddleware, oauthMiddleware, oauthRoutes.callback);
-app.get('/token', knexMiddleware, oauthMiddleware, oauthRoutes.token);
-
-
-// Jobs:
-app.get('/job', knexMiddleware, spotifyMiddleware, ioMiddleware, jobRoutes.job);
-
-
-// API:
-app.all('/api/spotify/*', spotifyMiddleware, apiRoutes.spotify);
-app.get('/api/tracks', apiRoutes.tracks);
-
+routes(app, oauthMiddleware, spotifyMiddleware, ioMiddleware);
 
 // Start server:
 const port = process.env.PORT || 3000;
