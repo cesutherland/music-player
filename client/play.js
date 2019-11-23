@@ -1,6 +1,6 @@
 import axios from 'axios';
 import store from './store';
-import { api } from '../config';
+import { api } from './config';
 
 const play = data => axios({
   method: 'put',

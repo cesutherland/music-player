@@ -6,7 +6,7 @@ import Login                       from './Login.jsx';
 import Player                      from './Player.jsx';
 import Tracks                      from './Tracks.jsx';
 import Sidebar                     from './Sidebar.jsx';
-import { oauth }                   from '../config';
+import { oauth }                   from './config';
 
 const authorizeUri = 'https://accounts.spotify.com/authorize?'+querystring.stringify(oauth);
 

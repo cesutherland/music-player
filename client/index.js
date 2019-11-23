@@ -6,7 +6,7 @@ import socket       from 'socket.io-client';
 import router       from './router.jsx';
 import player       from './player';
 import store        from './store';
-import { api }      from '../config';
+import { api }      from './config';
 
 function render(state) {
   ReactDOM.render(

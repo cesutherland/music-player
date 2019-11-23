@@ -1,5 +1,5 @@
 import React   from 'react';
-import { api } from '../config';
+import { api } from './config';
 
 export default (props) => {
   return (
