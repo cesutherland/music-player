@@ -1,14 +1,26 @@
-// OAuth - 
+const dotenv = require('dotenv');
+
+dotenv.config();
+
+// Environment config:
+const {
+  ALTPLAYER_API_BASE: apiBase,
+  ALTPLAYER_WEB_BASE: webBase,
+  ALTPLAYER_CLIENT_ID: clientId,
+} = process.env;
+
+
+// Application config:
 module.exports = {
   web: {
-    base: 'https://altplayer.humblesoftware.com/'
+    base: webBase,
   },
   api: {
-    base: 'https://altplayer.humblesoftware.com/'
+    base: apiBase,
   },
   oauth: {
-    client_id: '33fc61c99b8a4625be35535cc4a26f07',
-    redirect_uri: 'https://altplayer.humblesoftware.com/callback',
+    client_id: clientId,
+    redirect_uri: `${apiBase}/callback`,
     response_type: 'code',
     scope: [
       'playlist-modify-public',
@@ -19,10 +31,10 @@ module.exports = {
       'user-library-read',
       'user-library-modify',
       'user-modify-playback-state',
-      "user-read-birthdate",
+      'user-read-birthdate',
       'user-read-currently-playing',
-      "user-read-email",
-      "user-read-private"
-    ].join(' ')
-  }
+      'user-read-email',
+      'user-read-private',
+    ].join(' '),
+  },
 };

@@ -3,3 +3,4 @@ public/
 build/
 dev.sqlite3
 knexfile.js
+.env
