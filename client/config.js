@@ -1,3 +1,6 @@
-import config from '../config';
+const config = window.ALTPLAYER;
 
-export const { api, oauth } = config;
+export const {
+  api,
+  oauth
+} = config;

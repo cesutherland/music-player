@@ -1,4 +1,6 @@
 const mix = require('laravel-mix');
+const webpack = require('webpack');
+const config = require('./config');
 
 // Override font output dir for webpack file-loader?
 mix.config.publicPath = 'public';
@@ -11,4 +13,12 @@ mix
   .browserSync({
     port: 8080,
     proxy: 'localhost:3000'
+  })
+  .webpackConfig({
+    plugins: [
+      new webpack.DefinePlugin({
+        ALTPLAYER: JSON.stringify(config)
+      })
+    ]
   });
+
