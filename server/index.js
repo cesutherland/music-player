@@ -13,6 +13,7 @@ const knexfile        = require('../knexfile');
 const spotify         = require('./api/spotify');
 const oauth           = require('./api/oauth');
 const routes          = require('./routes');
+const oauthRoutes     = require('./routes/oauth');
 
 
 // Config:
