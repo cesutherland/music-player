@@ -11,6 +11,7 @@ mix
   .copy('client/index.html', 'public/')
   .sourceMaps()
   .browserSync({
+    open: false,
     port: 8080,
     proxy: 'localhost:3000'
   })
