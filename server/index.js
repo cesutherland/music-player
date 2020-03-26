@@ -14,6 +14,7 @@ const spotify         = require('./api/spotify');
 const oauth           = require('./api/oauth');
 const routes          = require('./routes');
 const oauthRoutes     = require('./routes/oauth');
+const store           = require('./store');
 
 
 // Config:
@@ -51,6 +52,11 @@ const spotifyMiddleware = (req, res, next) => {
   });
 };
 
+const storeMiddleware = (req, res, next) => {
+  req.store = store(knexInstance);
+  next();
+};
+
 // App:
 const app = express();
 const server = http.createServer(app);
@@ -68,6 +74,7 @@ app.use(cors({
 app.use(session);
 app.use(bodyParser.json());
 app.use(knexMiddleware);
+app.use(storeMiddleware);
 
 // Io:
 const io = socketio(server, {transports: ['polling']});
