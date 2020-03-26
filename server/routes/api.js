@@ -1,3 +1,26 @@
+const albumResult = album => ({
+  id: album.id,
+  name: album.name,
+  artists: album.artists.map(artistResult)
+});
+
+const artistResult = artist => ({
+  id: artist.id,
+  name: artist.name,
+});
+
+const trackResult = track => ({
+  id: track.id,
+  name: track.name,
+  disc_number: track.disc_number,
+  track_number: track.track_number,
+  album: albumResult(track.album),
+  artists: track.artists.map(artistResult),
+});
+
+const tracksResult = tracks =>
+  tracks.map(track => trackResult(track))
+
 module.exports = {
   spotify: (req, res) => {
     const method = req.method.toLowerCase();
@@ -11,7 +34,8 @@ module.exports = {
     req.store
       .tracks(req.session.userId)
       .then(
-        tracks => res.send(tracks.map(track => JSON.parse(track.track))),
+        //tracks => res.send(tracks),
+        tracks => res.send(tracksResult(tracks)),
         error => console.error(error)
       );
   }

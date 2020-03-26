@@ -6,4 +6,5 @@ module.exports = (knex) => ({
       .where({
         'user_tracks.user_id': userId
       })
+      .then(tracks => tracks.map(track => JSON.parse(track.track)))
 });
