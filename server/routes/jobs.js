@@ -51,22 +51,14 @@ module.exports = {
       let track = tracks.shift();
       if (track) {
         track = track.track || track;
-        return knex('tracks').where({foreign_id: track.id})
-          .then(
-            tracks => (tracks.length && tracks[0].id) || knex('tracks').insert({
-              foreign_id: track.id,
-              track: JSON.stringify(track)
-            }).then(resp => resp[0])
-          )
-          .then(trackId =>
-            knex('user_tracks').insert({
-              user_id: userId,
-              track_id: trackId
-            })
-            .catch(error => (false && console.error(error)))
-          )
+        return store
+          .findTrack(track.id)
+          .then(foundTrack => (foundTrack || store.insertTrack(track)))
+          .then(track => track.id)
+          .then(trackId => store.insertUserTrack(userId, trackId))
           .then(callback)
-          .then(() => storeTracks(tracks, callback));
+          .then(() => storeTracks(tracks, callback))
+          .catch(error => console.error(error));
       }
     };
 
