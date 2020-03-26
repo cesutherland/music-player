@@ -35,6 +35,9 @@ module.exports = {
 					return spotify
 						.collectTracks()
 						.then(tracks => storeTracks(tracks, updateJob(() => metadata.tracks.progress++)))
+						.then(() => spotify.collectAlbums())
+						.then(list => { console.log(`albums: ${list.length}`); return list; })
+						.then(list => collectAllAlbumTracks(list, tracks => (console.log(tracks.length) && tracks)))
 						.then(() => spotify.collectPlaylists())
 						.then(playlists => { console.log('playlists: '+playlists.length); return playlists; })
 						.then(playlists => collectAllPlaylistTracks(playlists, updateJob(() => metadata.playlists.progress++)))
@@ -55,13 +58,14 @@ module.exports = {
 
 
     const storeTracks = (tracks, callback) => {
-      const track = tracks.shift();
+      let track = tracks.shift();
       if (track) {
-        return knex('tracks').where({foreign_id: track.track.id})
+        track = track.track || track;
+        return knex('tracks').where({foreign_id: track.id})
           .then(
             tracks => (tracks.length && tracks[0].id) || knex('tracks').insert({
-              foreign_id: track.track.id,
-              track: JSON.stringify(track.track)
+              foreign_id: track.id,
+              track: JSON.stringify(track)
             }).then(resp => resp[0])
           )
           .then(trackId =>
@@ -74,7 +78,7 @@ module.exports = {
           .then(callback)
           .then(() => storeTracks(tracks, callback));
       }
-    }
+    };
 
     const collectAllPlaylistTracks = (playlists, callback) => {
       const playlist = playlists.length && playlists.shift();
@@ -85,6 +89,19 @@ module.exports = {
           .then(storeTracks)
           .then(callback)
           .then(() => collectAllPlaylistTracks(playlists, callback))
+      }
+    }
+
+    const collectAllAlbumTracks = (albums, callback) => {
+      const album = albums.length && albums.shift();
+      if (album) {
+        console.log('syncing', album.album.name);
+        console.log('remaining:', albums.length);
+        return spotify.collectAlbumTracks(album.album.id)
+          .then(tracks => tracks.map(track => (track.album = album.album) && track))
+          .then(storeTracks)
+        //  .then(callback)
+          .then(() => collectAllAlbumTracks(albums, callback))
       }
     }
 

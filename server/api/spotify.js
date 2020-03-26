@@ -15,36 +15,42 @@ function spotify (config) {
     params: method === 'get' ? data : query 
   }).then(response => response.data);
 
-  const collectList = (request, offset = 0) => 
-    request(offset).then(data =>
+  const collectList = (request, offset = 0) => {
+    return request(offset).then(data =>
       (data.total > offset + limit)
         ? collectList(request, offset + limit).then(items => data.items.concat(items))
         : data.items
     );
-  ;
+  };
 
   const getList = (
     path,
     offset = 0,
     limit = 50
-  ) => request('get', path, {
-    offset: offset,
-    limit: limit
-  });
+  ) => {
+    return request('get', path, {
+      offset: offset,
+      limit: limit
+    });
+  };
 
+  const getMe        = ()              => request('get', '/me');
+  const getAlbums    = (offset, limit) => getList('/me/albums', offset, limit);
   const getPlaylists = (offset, limit) => getList('/me/playlists', offset, limit);
   const getTracks    = (offset, limit) => getList('/me/tracks', offset, limit);
-  const getMe        = ()              => request('get', '/me');
 
   return {
     request,
     getMe,
     getList,
+    getAlbums,
     getTracks,
     getPlaylists,
-    collectPlaylists : () => collectList(getPlaylists),
-    collectPlaylistTracks : (owner, id) => collectList(offset => getList(`/users/${owner}/playlists/${id}/tracks`)),
-    collectTracks : () => collectList(getTracks)
+    collectAlbums: () => collectList(getAlbums),
+    collectAlbumTracks: (id) => collectList(offset => getList(`/albums/${id}/tracks`)),
+    collectPlaylists: () => collectList(getPlaylists),
+    collectPlaylistTracks: (owner, id) => collectList(offset => getList(`/users/${owner}/playlists/${id}/tracks`)),
+    collectTracks: () => collectList(getTracks)
   }
 }
 
