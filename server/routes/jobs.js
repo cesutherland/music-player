@@ -46,16 +46,18 @@ module.exports = {
 				return job;
 			});
 
+    const storeTrack = track =>
+      store
+        .findTrack(track.id)
+        .then(foundTrack => (foundTrack || store.insertTrack(track)))
+        .then(track => track.id)
+        .then(trackId => store.insertUserTrack(userId, trackId));
 
     const storeTracks = (tracks, callback) => {
       let track = tracks.shift();
       if (track) {
         track = track.track || track;
-        return store
-          .findTrack(track.id)
-          .then(foundTrack => (foundTrack || store.insertTrack(track)))
-          .then(track => track.id)
-          .then(trackId => store.insertUserTrack(userId, trackId))
+        return storeTrack(track)
           .then(callback)
           .then(() => storeTracks(tracks, callback))
           .catch(error => console.error(error));
