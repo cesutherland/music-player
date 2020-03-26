@@ -1,7 +1,7 @@
 import querystring                 from 'querystring';
 import React                       from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
-import layout                      from 'react-sidebar-layout';
+import Layout                      from './Layout.jsx';
 import Login                       from './Login.jsx';
 import Player                      from './Player.jsx';
 import Tracks                      from './Tracks.jsx';
@@ -51,7 +51,7 @@ const router = (state) => (
   <Router>
     {state.authentication.loggedIn
       ? (!state.job || state.job.finished
-        ? layout(
+        ? Layout(
           state,
           routes,
           <Login loggedIn={state.authentication.loggedIn}></Login>,
