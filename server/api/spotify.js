@@ -47,9 +47,9 @@ function spotify (config) {
     getTracks,
     getPlaylists,
     collectAlbums: () => collectList(getAlbums),
-    collectAlbumTracks: (id) => collectList(offset => getList(`/albums/${id}/tracks`)),
+    collectAlbumTracks: (id) => collectList(offset => getList(`/albums/${id}/tracks`, offset)),
     collectPlaylists: () => collectList(getPlaylists),
-    collectPlaylistTracks: (owner, id) => collectList(offset => getList(`/users/${owner}/playlists/${id}/tracks`)),
+    collectPlaylistTracks: (owner, id) => collectList(offset => getList(`/users/${owner}/playlists/${id}/tracks`, offset)),
     collectTracks: () => collectList(getTracks)
   }
 }
