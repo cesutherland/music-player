@@ -2,23 +2,13 @@ module.exports = {
   job: (req, res) => {
 
     const knex = req.knex;
+    const store = req.store;
     const spotify = req.spotify;
     const userId = req.session.userId;
 
-		const findJob = () => knex('jobs').where({
-        user_id: userId,
-        key: 'spotify-import',
-        finished: null
-      })
-      .then(jobs => jobs[0]);
-
-		const startJob = () => knex('jobs').insert({
-        user_id: userId,
-        key: 'spotify-import',
-        created: new Date(),
-        job: '{}'
-      })
-			.then(findJob)
+    const startJob = () =>
+      store.insertJob(userId)
+      .then(() => store.findJob(userId))
       .then(job => {
 
         if (!job) console.error('no job');
@@ -125,7 +115,7 @@ module.exports = {
         .then(() => metadata);
     };
 
-    return findJob()
+    return store.findJob(userId)
       .then(job => { return job || startJob(); })
       .then(
         job => res.send(job),
