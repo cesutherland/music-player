@@ -23,7 +23,7 @@ const facets = [
     key: 'added_yyyy',
     name: 'Added Year',
   },
-]
+];
 
 class Sidebar extends React.Component {
 
@@ -36,12 +36,18 @@ class Sidebar extends React.Component {
     };
   }
 
-  selectArtist (id) {
+  toggle (facet, value) {
+    const id = `${facet}::${value}`;
     const expanded = this.state.expanded;
     expanded[id] = !expanded[id];
     this.setState({
       expanded: expanded
     });
+  }
+
+  expanded (facet, value) {
+    const id = `${facet}::${value}`;
+    return this.state.expanded[id];
   }
 
   selectFacet (event) {
@@ -100,17 +106,18 @@ class Sidebar extends React.Component {
 
     const artists = facet.artist(tracks).sort((a, b) => a.name.localeCompare(b.name));
     const autoExpand = artists.length <= AUTO_EXPAND_LIMIT;
+    const expanded = (artist) => autoExpand || this.expanded('artist', artist.id);
 
     return (
       artists.map((artist, i) =>
         <li key={artist.id}>
           <a
-            onClick={this.selectArtist.bind(this, artist.id)}
-            className={autoExpand || this.state.expanded[artist.id] ? 'expanded' : ''}
+            onClick={() => this.toggle('artist', artist.id)}
+            className={expanded(artist) ? 'expanded' : ''}
           >
             {artist.name}
           </a>
-          {(autoExpand || this.state.expanded[artist.id]) &&
+          {expanded(artist) &&
             <ul className="list-unstyled">
             {getArtistAlbums(artist).map(album =>
               <li key={album.id}>
@@ -130,26 +137,26 @@ class Sidebar extends React.Component {
   }
 
   renderFacetAdded (tracks) {
+
     const years = Object.entries(facet.year(tracks));
     const autoExpand = years.length <= AUTO_EXPAND_LIMIT;
-    const expanded = (year) => autoExpand || this.state.expanded[year];
-    return years.map(([year, tracks]) => {
-      return (
-        <li key={year}>
-          <a
-            onClick={this.selectArtist.bind(this, year)}
-            className={expanded(year) ? 'expanded' : ''}
-          >
-            {year}
-          </a>
-          {expanded(year) &&
-            <ul className="list-unstyled">
-              {this.renderFacetArtistAlbum(tracks)}
-            </ul>
-          }
-        </li>
-      );
-    });
+    const expanded = (year) => autoExpand || this.expanded('year', year);
+
+    return years.map(([year, tracks]) =>
+      <li key={year}>
+        <a
+          onClick={() => this.toggle('year', year)}
+          className={expanded(year) ? 'expanded' : ''}
+        >
+          {year}
+        </a>
+        {expanded(year) &&
+          <ul className="list-unstyled">
+            {this.renderFacetArtistAlbum(tracks)}
+          </ul>
+        }
+      </li>
+    );
   }
 }
 
