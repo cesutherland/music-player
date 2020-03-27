@@ -13,25 +13,25 @@ module.exports = {
 
         if (!job) console.error('no job');
 
-				// Collect tracks:
-				getMetadata().then(metadata => {
-					const updateJob = (callback) => () => {
-						const socket = req.getSocket();
-						callback();
-						if (socket) {
-							socket.emit('job-progress', metadata);
-						}
-					};
-					return spotify
-						.collectTracks()
-						.then(tracks => storeTracks(tracks, updateJob(() => metadata.tracks.progress++)))
-						.then(() => spotify.collectAlbums())
-						.then(list => { console.log(`albums: ${list.length}`); return list; })
-						.then(list => collectAllAlbumTracks(list, tracks => (console.log(tracks.length) && tracks)))
-						.then(() => spotify.collectPlaylists())
-						.then(playlists => { console.log('playlists: '+playlists.length); return playlists; })
-						.then(playlists => collectAllPlaylistTracks(playlists, updateJob(() => metadata.playlists.progress++)))
-						.then(tracks => null, error => error)
+        // Collect tracks:
+        getMetadata().then(metadata => {
+          const updateJob = (callback) => () => {
+            const socket = req.getSocket();
+            callback();
+            if (socket) {
+              socket.emit('job-progress', metadata);
+            }
+          };
+          return spotify
+            .collectTracks()
+            .then(tracks => storeTracks(tracks, updateJob(() => metadata.tracks.progress++)))
+            .then(() => spotify.collectAlbums())
+            .then(list => { console.log(`albums: ${list.length}`); return list; })
+            .then(list => collectAllAlbumTracks(list, tracks => (console.log(tracks.length) && tracks)))
+            .then(() => spotify.collectPlaylists())
+            .then(playlists => { console.log('playlists: '+playlists.length); return playlists; })
+            .then(playlists => collectAllPlaylistTracks(playlists, updateJob(() => metadata.playlists.progress++)))
+            .then(tracks => null, error => error)
             .then(error => knex('jobs')
               .where({id: job.id})
               .update({
@@ -41,10 +41,10 @@ module.exports = {
                 })
               })
             );
-				});
+        });
 
-				return job;
-			});
+        return job;
+      });
 
     const storeTrack = track =>
       store
