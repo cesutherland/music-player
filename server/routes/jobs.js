@@ -46,18 +46,18 @@ module.exports = {
         return job;
       });
 
-    const storeTrack = track =>
+    const storeTrack = (track, dateAdded) =>
       store
         .findTrack(track.id)
-        .then(foundTrack => (foundTrack || store.insertTrack(track)))
-        .then(track => track.id)
-        .then(trackId => store.insertUserTrack(userId, trackId));
+        .then(foundTrack => ((foundTrack && foundTrack.id) || store.insertTrack(track)))
+        .then(trackId => store.insertUserTrack(userId, trackId, dateAdded));
 
     const storeTracks = (tracks, callback) => {
       let track = tracks.shift();
       if (track) {
+        let dateAdded = track.added_at;
         track = track.track || track;
-        return storeTrack(track)
+        return storeTrack(track, dateAdded)
           .then(callback)
           .then(() => storeTracks(tracks, callback))
           .catch(error => console.error(error));
@@ -82,7 +82,11 @@ module.exports = {
         console.log('syncing', album.album.name);
         console.log('remaining:', albums.length);
         return spotify.collectAlbumTracks(album.album.id)
-          .then(tracks => tracks.map(track => (track.album = album.album) && track))
+          .then(tracks => tracks.map(track => {
+            track.album = album.album;
+            track.added_at = album.added_at;
+            return track;
+          }))
           .then(storeTracks)
         //  .then(callback)
           .then(() => collectAllAlbumTracks(albums, callback))

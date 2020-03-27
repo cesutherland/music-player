@@ -39,11 +39,14 @@ module.exports = (knex) => ({
       })
       .then(tracks => tracks.map(track => JSON.parse(track.track))),
 
-  insertUserTrack: (userId, trackId) =>
-    knex('user_tracks')
-      .insert({
-        user_id: userId,
-        track_id: trackId,
-      })
-      .catch(error => (false && console.error(error))),
+  insertUserTrack: (userId, trackId, dateAdded) => {
+    const userTrack = {
+      user_id: userId,
+      track_id: trackId,
+      added_to_library: new Date(dateAdded)
+    };
+    return knex('user_tracks')
+      .insert(userTrack)
+      .catch(error => console.error(error));
+  }
 });
