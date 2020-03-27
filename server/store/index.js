@@ -1,3 +1,10 @@
+const trackResult = (track) => {
+  const added = track.added_to_library;
+  track = JSON.parse(track.track);
+  track.added = added;
+  return track;
+};
+
 module.exports = (knex) => ({
   insertJob: (userId) =>
     knex('jobs')
@@ -37,7 +44,7 @@ module.exports = (knex) => ({
       .where({
         'user_tracks.user_id': userId
       })
-      .then(tracks => tracks.map(track => JSON.parse(track.track))),
+      .then(tracks => tracks.map(trackResult)),
 
   insertUserTrack: (userId, trackId, dateAdded) => {
     const userTrack = {

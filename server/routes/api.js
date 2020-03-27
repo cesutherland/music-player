@@ -14,6 +14,7 @@ const trackResult = track => ({
   name: track.name,
   disc_number: track.disc_number,
   track_number: track.track_number,
+  added: track.added,
   album: albumResult(track.album),
   artists: track.artists.map(artistResult),
 });
