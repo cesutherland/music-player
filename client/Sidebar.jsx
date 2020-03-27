@@ -95,11 +95,9 @@ class Sidebar extends React.Component {
   }
 
   renderTracks (tracks) {
-    const map = {
-      'artist_album': 'renderFacetArtistAlbum',
-      'added_yyyy': 'renderFacetAdded',
-    };
-    return this[map[this.state.facet]](tracks);
+    return this.state.facet === 'artist_album'
+      ? this.renderFacetArtistAlbum(tracks)
+      : this.renderFacetTracks(tracks, this.state.facet);
   }
 
   renderFacetArtistAlbum (tracks) {
@@ -136,27 +134,30 @@ class Sidebar extends React.Component {
     );
   }
 
-  renderFacetAdded (tracks) {
+  renderFacetTracks (tracks, facetKey)
+  {
+    const items = Object.entries(facet[facetKey](tracks));
+    const autoExpand = items.length <= AUTO_EXPAND_LIMIT;
+    const expanded = (item) => autoExpand || this.expanded(facetKey, item);
 
-    const years = Object.entries(facet.year(tracks));
-    const autoExpand = years.length <= AUTO_EXPAND_LIMIT;
-    const expanded = (year) => autoExpand || this.expanded('year', year);
+    items.sort(([keyA], [keyB]) => keyA.localeCompare(keyB));
 
-    return years.map(([year, tracks]) =>
-      <li key={year}>
+    return items.map(([item, tracks]) =>
+      <li key={item}>
         <a
-          onClick={() => this.toggle('year', year)}
-          className={expanded(year) ? 'expanded' : ''}
+          onClick={() => this.toggle(facetKey, item)}
+          className={expanded(item) ? 'expanded' : ''}
         >
-          {year}
+          {item}
         </a>
-        {expanded(year) &&
+        {expanded(item) &&
           <ul className="list-unstyled">
             {this.renderFacetArtistAlbum(tracks)}
           </ul>
         }
       </li>
     );
+
   }
 }
 
