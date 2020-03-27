@@ -20,8 +20,12 @@ const facets = [
     name: 'Artist / Album',
   },
   {
-    key: 'added_yyyy',
+    key: 'yearAdded',
     name: 'Added Year',
+  },
+  {
+    key: 'yearMonthAdded',
+    name: 'Added Year / Month',
   },
 ];
 

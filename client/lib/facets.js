@@ -26,5 +26,10 @@ export default {
     return artists;
   }, {})),
 
-  year: facet(track => (new Date(track.added)).getFullYear()),
+  yearAdded: facet(track => (new Date(track.added)).getFullYear()),
+  yearMonthAdded: facet(track => {
+    const date = new Date(track.added);
+    const month = (date.getMonth() + 1 +'').padStart(2, '0');
+    return `${date.getFullYear()} / ${month}`;
+  }),
 }
