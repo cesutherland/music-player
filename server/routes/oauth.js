@@ -1,11 +1,6 @@
 const spotifyAPI = require('../api/spotify');
 
-const getOAuth = (req) =>
-  req.knex('oauth')
-    .select('*')
-    .innerJoin('users', 'users.id', 'oauth.user_id')
-    .where({user_id: req.session.userId || null})
-    .then(oauths => { return oauths[0]; });
+const getOAuth = (req) => req.store.findOAuth(req.session.userId);
 
 const initSession = (req, user, accessToken, refreshToken) => {
   const knex = req.knex;

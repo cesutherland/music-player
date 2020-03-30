@@ -24,6 +24,22 @@ module.exports = (knex) => ({
       })
       .then(jobs => jobs[0]),
 
+  findOAuth: (userId) => 
+    knex('oauth')
+      .select('*')
+      .innerJoin('users', 'users.id', 'oauth.user_id')
+      .where({
+        key: 'spotify',
+        user_id: userId || null
+      })
+      .then(
+        oauths => {
+          if (oauths[0]) return oauths[0];
+          throw new Error(`Session not found ${userId}`);
+        },
+        error => (console.error('error', error) || error)
+      ),
+
   findTrack: (foreignId) =>
     knex('tracks')
       .where({foreign_id: foreignId})
