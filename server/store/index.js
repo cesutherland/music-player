@@ -40,6 +40,17 @@ module.exports = (knex) => ({
         error => (console.error('error', error) || error)
       ),
 
+  updateOAuth: (userId, accessToken) =>
+    knex('oauth')
+      .update({
+        access_token: accessToken,
+        connected: true
+      })
+      .where({
+        user_id: userId,
+        key: 'spotify'
+      }),
+
   findTrack: (foreignId) =>
     knex('tracks')
       .where({foreign_id: foreignId})
