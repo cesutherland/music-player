@@ -65,7 +65,8 @@ const token = (req, res) => getOAuth(req)
     data => {
       console.log(data);
       const accessToken = data.access_token;
-      return req.store.updateOAuth(req.session.userId, accessToken)
+      const expires = data.expires_in + Math.floor(+new Date() / 1000);
+      return req.store.updateOAuth(req.session.userId, accessToken, expires)
           .then(() => {
             req.session.access_token = data.access_token;
             res.send({

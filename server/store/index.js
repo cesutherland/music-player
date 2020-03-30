@@ -40,10 +40,11 @@ module.exports = (knex) => ({
         error => (console.error('error', error) || error)
       ),
 
-  updateOAuth: (userId, accessToken) =>
+  updateOAuth: (userId, accessToken, expires) =>
     knex('oauth')
       .update({
         access_token: accessToken,
+        expires: expires,
         connected: true
       })
       .where({
