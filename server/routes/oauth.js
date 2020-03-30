@@ -1,4 +1,4 @@
-const spotifyAPI = require('../api/spotify');
+const spotifyAPI = require('../spotify/api');
 
 const getOAuth = (req) => req.store.findOAuth(req.session.userId);
 
