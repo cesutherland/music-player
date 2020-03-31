@@ -1,4 +1,5 @@
 const spotifyAPI = require('../spotify/api');
+const SpotifyOAuthService = require('../services/oauth.js');
 
 const getOAuth = (req) => req.store.findOAuth(req.session.userId);
 
@@ -59,26 +60,19 @@ const callback = (req, res) => req.oauth.token(req.query.code).then(
   }
 );
 
-const token = (req, res) => getOAuth(req)
-  .then(oauth => oauth && req.oauth.refresh(oauth.refresh_token))
-  .then(
-    data => {
-      console.log(data);
-      const accessToken = data.access_token;
-      const expires = data.expires_in + Math.floor(+new Date() / 1000);
-      return req.store.updateOAuth(req.session.userId, accessToken, expires)
-          .then(() => {
-            req.session.access_token = data.access_token;
-            res.send({
-              access_token: req.session.access_token
-            });
-          });
+const token = (req, res) => {
+  const service = new SpotifyOAuthService(req.store, req.oauth);
+  service.refresh(req.session.userId).then(
+    token => {
+      req.session.access_token = token;
+      res.send({ access_token: token });
     },
     error => {
       console.error('error');
       console.log(error.response);
     }
   );
+};
 
 module.exports = {
   getOAuth,
