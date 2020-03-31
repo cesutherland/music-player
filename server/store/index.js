@@ -35,7 +35,7 @@ module.exports = (knex) => ({
       .then(
         oauths => {
           if (oauths[0]) return oauths[0];
-          throw new Error(`Session not found ${userId}`);
+          throw new Error(`OAuth not found for user ${userId}`);
         },
         error => (console.error('error', error) || error)
       ),
