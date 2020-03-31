@@ -23,24 +23,35 @@ window.onSpotifyWebPlaybackSDKReady = () =>
   : ready = true;
 
 function getPlayer (token) {
+
   var useCallback = false;
   var player = new Spotify.Player({
     name: "altplayer",
     getOAuthToken: function (callback) {
       if (!useCallback || !tokenCallback) {
+        console.info('player init with token')
         callback(token);
         useCallback = true;
       } else {
+        console.info('player init with callback');
         tokenCallback(callback);
       }
     },
     volume: 0.5
   });
+
+  // Errors:
+  const logError = (error) => console.error(error);
+  player.on('initialization_error', logError);
+  player.on('authentication_error', logError);
+  player.on('account_error', logError);
+  player.on('playback_error', logError);
+
+  // Connect:
+  player.on('ready', ({device_id}) => trigger('deviceId', device_id));
   player.connect();
-  player.on('ready', data => {
-    let { device_id } = data;
-    trigger('deviceId', device_id);
-  });
+
+  // Status:
   setInterval(() => {
     player.getCurrentState().then(state => {
       if (state) {
