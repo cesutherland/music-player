@@ -13,18 +13,14 @@ const init = (req, res) => {
     return res.send({});
   }
 
-  return req.store.findOAuth(userId).then(data =>
-    req.knex('jobs')
-      .where({
-        user_id: req.session.userId || null
+  return req.store.findOAuth(userId).then(user =>
+    req.store.findJob(userId).then(job =>
+      res.send({
+        job: job || null,
+        email: user.email,
+        access_token: user.access_token
       })
-      .limit(1)
-      .orderBy('id', 'desc')
-      .then(jobs => res.send({
-        job: jobs[0] || null,
-        email: data.email,
-        access_token: data.access_token
-      }))
+    )
   );
 };
 

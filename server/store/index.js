@@ -20,8 +20,9 @@ module.exports = (knex) => ({
       .where({
         user_id: userId,
         key: 'spotify-import',
-        finished: null
+        // finished: null
       })
+      .orderBy('id', 'desc')
       .then(jobs => jobs[0]),
 
   findOAuth: (userId) => 
