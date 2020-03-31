@@ -1,4 +1,3 @@
-const oauthRoutes = require('./oauth');
 const config      = require('../../config');
 
 const logout = (req, res) => {
@@ -8,10 +7,14 @@ const logout = (req, res) => {
 }
 
 const init = (req, res) => {
-  return oauthRoutes.getOAuth(req).then(data =>
-    !data
-    ? res.send({})
-    : req.knex('jobs')
+  const userId = req.session.userId;
+
+  if (!userId) {
+    return res.send({});
+  }
+
+  return req.store.findOAuth(userId).then(data =>
+    req.knex('jobs')
       .where({
         user_id: req.session.userId || null
       })
