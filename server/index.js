@@ -15,6 +15,8 @@ const oauth           = require('./spotify/oauth');
 const routes          = require('./routes');
 const oauthRoutes     = require('./routes/oauth');
 const store           = require('./store');
+const OAuthService    = require('./spotify/OAuthService');
+
 
 // Config:
 const oauthConfig = {
@@ -29,11 +31,13 @@ const oauthInstance = oauth(oauthConfig);
 const sessionStorageInstance = new SessionStorage({
   knex: knexInstance
 });
+const oauthService = new OAuthService(storeInstance, oauthInstance);
 
 // Middleware:
 const oauthMiddleware = (req, res, next) => {
   req.oauthDestination = config.web.base;
   req.oauth = oauthInstance;
+  req.oauthService = oauthService;
   next();
 };
 

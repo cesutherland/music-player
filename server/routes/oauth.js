@@ -1,5 +1,4 @@
 const spotifyAPI = require('../spotify/api');
-const OAuthService = require('../spotify/OAuthService.js');
 
 const getOAuth = (req) => req.store.findOAuth(req.session.userId);
 
@@ -61,8 +60,7 @@ const callback = (req, res) => req.oauth.token(req.query.code).then(
 );
 
 const token = (req, res) => {
-  const service = new OAuthService(req.store, req.oauth);
-  service.refresh(req.session.userId).then(
+  req.oauthService.refresh(req.session.userId).then(
     token => {
       req.session.access_token = token;
       res.send({ access_token: token });
