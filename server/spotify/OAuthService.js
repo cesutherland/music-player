@@ -1,6 +1,6 @@
 var spotify = require('../spotify/oauth');
 
-class SpotifyOAuthService
+class OAuthService
 {
   constructor(store, oauth)
   {
@@ -25,4 +25,4 @@ class SpotifyOAuthService
   }
 }
 
-module.exports = SpotifyOAuthService;
+module.exports = OAuthService;
