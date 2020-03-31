@@ -16,7 +16,6 @@ const routes          = require('./routes');
 const oauthRoutes     = require('./routes/oauth');
 const store           = require('./store');
 
-
 // Config:
 const oauthConfig = {
   client_id: config.oauth.client_id,
@@ -25,14 +24,16 @@ const oauthConfig = {
 };
 
 const knexInstance = knex(knexfile[process.env.NODE_ENV || 'development']);
-const storeInstance = new SessionStorage({
+const storeInstance = store(knexInstance);
+const oauthInstance = oauth(oauthConfig);
+const sessionStorageInstance = new SessionStorage({
   knex: knexInstance
 });
 
 // Middleware:
 const oauthMiddleware = (req, res, next) => {
   req.oauthDestination = config.web.base;
-  req.oauth = oauth(oauthConfig);
+  req.oauth = oauthInstance;
   next();
 };
 
@@ -43,6 +44,7 @@ const knexMiddleware = (req, res, next) => {
 
 const spotifyMiddleware = (req, res, next) => {
   oauthRoutes.getOAuth(req).then(data => {
+    console.log('here', data);
     req.spotify = spotify({
       oauth: oauth(oauthConfig),
       access_token: data.access_token,
@@ -53,7 +55,7 @@ const spotifyMiddleware = (req, res, next) => {
 };
 
 const storeMiddleware = (req, res, next) => {
-  req.store = store(knexInstance);
+  req.store = storeInstance;
   next();
 };
 
@@ -64,7 +66,7 @@ const session = Session({
   secret: 'keyboard cat',
   saveUninitialized: true,
   resave: false,
-  store: storeInstance
+  store: sessionStorageInstance
 });
 
 app.use(cors({
@@ -72,9 +74,9 @@ app.use(cors({
   credentials: true
 }));
 app.use(session);
+app.use(storeMiddleware);
 app.use(bodyParser.json());
 app.use(knexMiddleware);
-app.use(storeMiddleware);
 
 // Io:
 const io = socketio(server, {transports: ['polling']});
