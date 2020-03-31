@@ -28,7 +28,7 @@ module.exports = {
     const path = req.path.replace(/^\/api\/spotify/i, '');
     req.spotify.request(method, path, req.body, req.query).then(
       data => res.send(data),
-      error => console.error(error.response)
+      error => console.error(error.message)
     );
   },
   tracks: (req, res) => {
