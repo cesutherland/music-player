@@ -6,14 +6,14 @@ const limit = 50;
 function spotify (config) {
 
   const getConfig = (method, path, data, query) => ({
-      method: method,
-      url: base+path,
-      headers: {
-        'Authorization': 'Bearer '+config.access_token
-      },
-      data: method !== 'get' ? data : null,
-      params: method === 'get' ? data : query 
-    });
+    method: method,
+    url: base+path,
+    headers: {
+      'Authorization': 'Bearer '+config.access_token
+    },
+    data: method !== 'get' ? data : null,
+    params: method === 'get' ? data : query 
+  });
 
   const request = (method, path, data, query) =>
     axios(getConfig(method, path, data, query))
@@ -23,9 +23,9 @@ function spotify (config) {
           if (error.response && error.response.status === 401) {
             console.error('refreshing token...');
             return config.oauth
-              .refresh(config.refresh_token)
-              .then(data => {
-                config.access_token = data.access_token;
+              .refresh(config.userId)
+              .then(accessToken => {
+                config.access_token = accessToken;
                 console.error('token refreshed.');
                 return request(method, path, data, query);
               });

@@ -48,9 +48,9 @@ const knexMiddleware = (req, res, next) => {
 
 const spotifyMiddleware = (req, res, next) => {
   oauthRoutes.getOAuth(req).then(data => {
-    console.log('here', data);
     req.spotify = spotify({
-      oauth: oauth(oauthConfig),
+      userId: req.session.userId,
+      oauth: oauthService,
       access_token: data.access_token,
       refresh_token: data.refresh_token
     });
