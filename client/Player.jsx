@@ -19,7 +19,7 @@ class Player extends React.Component {
 
   render() {
 
-    const props      = this.props;
+    const props     = this.props;
     const player    = props.player;
     const track     = player.track;
     const hasTrack  = track.name;
@@ -40,7 +40,7 @@ class Player extends React.Component {
             : ''
           }
         </div>
-        <div className="player-info">{track.name || ''}&nbsp;</div>
+        <div className="player-info">{this.formatTrack(track)}&nbsp;</div>
         <div className="player-scrubber">
           <div className="player-position">{hasTrack && position}</div>
           <div className="player-scrub" onClick={this.onScrub.bind(this)}>
@@ -59,6 +59,13 @@ class Player extends React.Component {
         </div>
       </div>
     );
+  }
+
+  formatTrack (track) {
+    return track.name
+      ? `${track.name} — ${track.artists[0].name} — ${track.album.name}`
+      : '';
+
   }
 };
 
