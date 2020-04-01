@@ -77,8 +77,25 @@ body {
   .progress {
     margin: 0px;
     height: 5px;
+    overflow: visible;
+    background-color: #aaa;
     .progress-bar {
       transition: width 0.0s linear;
+      text-align: right;
+        border-radius: 4px 0px 0px 4px;
+    }
+    &:hover {
+      .progress-bar::after {
+        content: '•';
+        font-size: 42px;
+        color: blue;
+        position: relative;
+        top: -6px;
+        left: -12px;
+        color: #f5f5f5;
+        display: inline-block;
+        width: 0px;
+      }
     }
   }
 }
