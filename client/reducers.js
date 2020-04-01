@@ -1,13 +1,23 @@
 import { combineReducers } from 'redux';
 
 class PlayerState {
-  constructor () {
-    this.volume = 50;
-    this.position = 0;
-    this.duration = 0;
-    this.track = {};
+  constructor (
+    volume   = 50,
+    position = 0,
+    duration = 0,
+    track    = {},
+    paused   = true,
+  ) {
+    this.volume   = volume;
+    this.position = position;
+    this.duration = duration;
+    this.track    = track;
+    this.paused   = paused;
   }
 }
+
+PlayerState.fromState = ({volume, position, duration, track, paused}) =>
+  new PlayerState(volume, position, duration, track, paused);
 
 export default combineReducers({
   authentication: (state = {}, action) => {
@@ -39,7 +49,7 @@ export default combineReducers({
     switch(action.type) {
       case 'PLAYER_STATE':
         const data = action.data;
-        state = new PlayerState;
+        state = PlayerState.fromState(state);
         state.position = data.position;
         state.duration = data.duration;
         state.paused   = data.paused;
