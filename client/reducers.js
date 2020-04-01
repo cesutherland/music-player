@@ -47,6 +47,11 @@ export default combineReducers({
   },
   player: (state = new PlayerState, action) => {
     switch(action.type) {
+      case 'PLAYER_SEEK':
+        console.log(state.track);
+        state = PlayerState.fromState(state);
+        state.position = action.data;
+        return state;
       case 'PLAYER_TOGGLE':
         state = PlayerState.fromState(state);
         state.paused = !state.paused;

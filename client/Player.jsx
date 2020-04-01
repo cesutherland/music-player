@@ -11,6 +11,7 @@ class Player extends React.Component {
     const percent = (event.clientX - bounds.left) / target.offsetWidth;
     const position = Math.floor(percent * this.props.player.duration);
     playerActions.seek(position);
+    this.props.seek(position);
   }
 
   onToggle(event) {
@@ -79,7 +80,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    toggle: () => dispatch({type: 'PLAYER_TOGGLE'})
+    toggle: () => dispatch({type: 'PLAYER_TOGGLE'}),
+    seek: (position) => dispatch({type: 'PLAYER_SEEK', data: position}),
   };
 };
 
