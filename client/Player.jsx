@@ -14,6 +14,7 @@ class Player extends React.Component {
   }
 
   onToggle(event) {
+    this.props.toggle();
     playerActions.toggle();
   }
 
@@ -78,6 +79,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
+    toggle: () => dispatch({type: 'PLAYER_TOGGLE'})
   };
 };
 

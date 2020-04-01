@@ -47,6 +47,10 @@ export default combineReducers({
   },
   player: (state = new PlayerState, action) => {
     switch(action.type) {
+      case 'PLAYER_TOGGLE':
+        state = PlayerState.fromState(state);
+        state.paused = !state.paused;
+        return state;
       case 'PLAYER_STATE':
         const data = action.data;
         state = PlayerState.fromState(state);
