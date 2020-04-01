@@ -61,14 +61,11 @@ axios({
   if (!state.job) getJob();
 
   player.init(
-    data.access_token,
-    callback => axios({
+    () => axios({
       method: 'get',
       url: api.base + '/token',
       withCredentials: true
-    }).then(res => {
-      callback(res.data.access_token);
-    }),
+    }).then(res => res.data.access_token),
     (event, data) => {
       switch (event) {
         case 'deviceId': store.dispatch({
