@@ -53,7 +53,7 @@ class Sidebar extends React.Component {
 
   setState (state, callback) {
     super.setState(state, callback);
-    storage.set(state);
+    storage.set(this.state);
   }
 
   toggle (facet, value) {
