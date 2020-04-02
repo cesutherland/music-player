@@ -48,7 +48,6 @@ export default combineReducers({
   player: (state = new PlayerState, action) => {
     switch(action.type) {
       case 'PLAYER_SEEK':
-        console.log(state.track);
         state = PlayerState.fromState(state);
         state.position = action.data;
         return state;
@@ -58,11 +57,12 @@ export default combineReducers({
         return state;
       case 'PLAYER_STATE':
         const data = action.data;
+        const track = data.track_window;
         state = PlayerState.fromState(state);
         state.position = data.position;
         state.duration = data.duration;
         state.paused   = data.paused;
-        state.track    = data.track_window.current_track || null;
+        state.track    = (track && track.current_track) || {};
         return state;
     }
     return state;
