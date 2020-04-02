@@ -1,4 +1,4 @@
-import dotenv from 'dotenv';
+const dotenv = require('dotenv');
 
 dotenv.config();
 
@@ -11,7 +11,7 @@ const {
 
 
 // Application config:
-export default {
+module.exports = {
   web: {
     base: webBase,
   },
