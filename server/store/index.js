@@ -36,7 +36,7 @@ export default (knex) => ({
       .then(
         oauths => {
           if (oauths[0]) return oauths[0];
-          throw new Error(`OAuth not found for user ${userId}`);
+          console.error(`OAuth not found for user ${userId}`);
         },
         error => (console.error('error', error) || error)
       ),
