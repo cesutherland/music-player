@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import filter      from './lib/filters';
 import facet       from './lib/facets';
 import play        from './play';
+import storage     from './storage';
 
 const AUTO_EXPAND_LIMIT = 5;
 
@@ -41,11 +42,18 @@ class SidebarState {
   }
 }
 
+SidebarState.fromObject = ({facet, expanded, query}) => new SidebarState(facet, expanded, query);
+
 class Sidebar extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = new SidebarState();
+    this.state = new SidebarState.fromObject(storage.get());
+  }
+
+  setState (state, callback) {
+    super.setState(state, callback);
+    storage.set(state);
   }
 
   toggle (facet, value) {
