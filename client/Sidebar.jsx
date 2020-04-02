@@ -32,7 +32,7 @@ const facets = [
 
 class SidebarState {
   constructor (
-    facet = 'artist_album',
+    facet = 'yearMonthAdded',
     expanded = {},
     query = '',
   ) {
