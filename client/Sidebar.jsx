@@ -29,15 +29,23 @@ const facets = [
   },
 ];
 
+class SidebarState {
+  constructor (
+    facet = 'artist_album',
+    expanded = {},
+    query = '',
+  ) {
+    this.facet = facet;
+    this.expanded = expanded;
+    this.query = query;
+  }
+}
+
 class Sidebar extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {
-      facet: 'artist_album',
-      expanded: {},
-      query: ''
-    };
+    this.state = new SidebarState();
   }
 
   toggle (facet, value) {
