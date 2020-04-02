@@ -4,7 +4,7 @@ const key = 'altplayer';
 const storage = {
   get: () => {
     try {
-      return JSON.parse(localStorage.getItem(key));
+      return JSON.parse(localStorage.getItem(key)) || {};
     } catch (e) {
       return {};
     }
