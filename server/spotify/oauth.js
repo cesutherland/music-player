@@ -1,5 +1,5 @@
-const axios           = require('axios');
-const querystring     = require('querystring');
+import axios       from 'axios';
+import querystring from 'querystring';
 
 function oauth (config) {
 
@@ -31,4 +31,4 @@ function oauth (config) {
   }
 };
 
-module.exports = oauth;
+export default oauth;

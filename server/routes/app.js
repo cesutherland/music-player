@@ -1,4 +1,4 @@
-const config      = require('../../config');
+import config from '../../config';
 
 const logout = (req, res) => {
   return req.session.destroy((err) => {
@@ -24,7 +24,7 @@ const init = (req, res) => {
   );
 };
 
-module.exports = {
+export default {
   logout,
   init
 };

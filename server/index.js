@@ -1,22 +1,21 @@
 // Modules:
-const express         = require('express');
-const bodyParser      = require('body-parser');
-const cors            = require('cors')
-const path            = require('path');
-const knex            = require('knex');
-const socketio        = require('socket.io');
-const http            = require('http');
-const Session         = require('express-session')
-const SessionStorage  = require('connect-session-knex')(Session);
-const config          = require('../config');
-const knexfile        = require('../knexfile');
-const spotify         = require('./spotify/api');
-const oauth           = require('./spotify/oauth');
-const routes          = require('./routes');
-const oauthRoutes     = require('./routes/oauth');
-const store           = require('./store');
-const OAuthService    = require('./spotify/OAuthService');
-
+import express        from 'express';
+import bodyParser     from 'body-parser';
+import cors           from 'cors';
+import path           from 'path';
+import knex           from 'knex';
+import socketio       from 'socket.io';
+import http           from 'http';
+import Session        from 'express-session'
+import SessionStorage from 'connect-session-knex';
+import config         from '../config';
+import knexfile       from '../knexfile';
+import spotify        from './spotify/api';
+import oauth          from './spotify/oauth';
+import routes         from './routes';
+import oauthRoutes    from './routes/oauth';
+import store          from './store';
+import OAuthService   from './spotify/OAuthService';
 
 // Config:
 const oauthConfig = {
@@ -28,7 +27,7 @@ const oauthConfig = {
 const knexInstance = knex(knexfile[process.env.NODE_ENV || 'development']);
 const storeInstance = store(knexInstance);
 const oauthInstance = oauth(oauthConfig);
-const sessionStorageInstance = new SessionStorage({
+const sessionStorageInstance = new (SessionStorage(Session))({
   knex: knexInstance
 });
 const oauthService = new OAuthService(storeInstance, oauthInstance);

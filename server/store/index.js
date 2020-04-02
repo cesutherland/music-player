@@ -5,7 +5,7 @@ const trackResult = (track) => {
   return track;
 };
 
-module.exports = (knex) => ({
+export default (knex) => ({
   insertJob: (userId) =>
     knex('jobs')
       .insert({

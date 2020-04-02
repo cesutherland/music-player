@@ -1,4 +1,4 @@
-var spotify = require('../spotify/oauth');
+import spotify from './oauth';
 
 class OAuthService
 {
@@ -25,4 +25,4 @@ class OAuthService
   }
 }
 
-module.exports = OAuthService;
+export default OAuthService;

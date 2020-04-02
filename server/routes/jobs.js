@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   job: (req, res) => {
 
     const knex = req.knex;

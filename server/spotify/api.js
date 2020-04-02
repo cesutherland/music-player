@@ -1,4 +1,4 @@
-const axios           = require('axios');
+import axios from 'axios';
 
 const base = 'https://api.spotify.com/v1';
 const limit = 50;
@@ -74,4 +74,4 @@ function spotify (config) {
   }
 }
 
-module.exports = spotify;
+export default spotify;

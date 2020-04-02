@@ -1,4 +1,4 @@
-const spotifyAPI = require('../spotify/api');
+import spotifyAPI from '../spotify/api';
 
 const getOAuth = (req) => req.store.findOAuth(req.session.userId);
 
@@ -72,7 +72,7 @@ const token = (req, res) => {
   );
 };
 
-module.exports = {
+export default {
   getOAuth,
   callback,
   token

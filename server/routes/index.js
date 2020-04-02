@@ -1,11 +1,10 @@
 /**
  * Routes
  */
-const appRoutes   = require('./app');
-const oauthRoutes = require('./oauth');
-const jobRoutes   = require('./jobs');
-const apiRoutes   = require('./api');
-
+import appRoutes   from './app';
+import oauthRoutes from './oauth';
+import jobRoutes   from './jobs';
+import apiRoutes   from './api';
 
 const routes = (
   app,
@@ -30,4 +29,4 @@ const routes = (
   app.get('/api/tracks', apiRoutes.tracks);
 };
 
-module.exports = routes;
+export default routes;

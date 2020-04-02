@@ -22,7 +22,7 @@ const trackResult = track => ({
 const tracksResult = tracks =>
   tracks.map(track => trackResult(track))
 
-module.exports = {
+export default {
   spotify: (req, res) => {
     const method = req.method.toLowerCase();
     const path = req.path.replace(/^\/api\/spotify/i, '');
