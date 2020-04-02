@@ -1,5 +1,5 @@
 
-exports.up = function(knex, Promise) {
+exports.up = function(knex) {
   return Promise.all([
     knex.schema.createTable('oauth', function (table) {
       table.increments('id').primary().index();
@@ -35,7 +35,7 @@ exports.up = function(knex, Promise) {
   ]);
 };
 
-exports.down = function(knex, Promise) {
+exports.down = function(knex) {
   return Promise.all([
     knex.schema.dropTable('oauth'),
     knex.schema.dropTable('tracks'),
