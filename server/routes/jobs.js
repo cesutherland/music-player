@@ -34,6 +34,7 @@ const job = (req, res) => {
       // Collect tracks:
       getMetadata(spotify).then(metadata => {
         const updateJob = (callback) => () => {
+          console.log(`update: ${JSON.stringify(metadata)}`);
           const socket = req.getSocket();
           callback();
           if (socket) {
@@ -45,7 +46,7 @@ const job = (req, res) => {
           .then(tracks => storeTracks(tracks, updateJob(() => metadata.tracks.progress++)))
           .then(() => spotify.collectAlbums())
           .then(list => { console.log(`albums: ${list.length}`); return list; })
-          .then(list => collectAllAlbumTracks(list, tracks => (console.log(tracks.length) && tracks)))
+          .then(list => collectAllAlbumTracks(list, updateJob(() => metadata.albums.progress++)))
           .then(() => spotify.collectPlaylists())
           .then(playlists => { console.log('playlists: '+playlists.length); return playlists; })
           .then(playlists => collectAllPlaylistTracks(playlists, updateJob(() => metadata.playlists.progress++)))
@@ -85,8 +86,6 @@ const job = (req, res) => {
   const collectAllPlaylistTracks = (playlists, callback) => {
     const playlist = playlists.length && playlists.shift();
     if (playlist) {
-      console.log('syncing', playlist.name);
-      console.log('remaining:', playlists.length);
       return spotify.collectPlaylistTracks(playlist.owner.id, playlist.id)
         .then(storeTracks)
         .then(callback)
@@ -97,8 +96,6 @@ const job = (req, res) => {
   const collectAllAlbumTracks = (albums, callback) => {
     const album = albums.length && albums.shift();
     if (album) {
-      console.log('syncing', album.album.name);
-      console.log('remaining:', albums.length);
       return spotify.collectAlbumTracks(album.album.id)
         .then(tracks => tracks.map(track => {
           track.album = album.album;
@@ -106,7 +103,7 @@ const job = (req, res) => {
           return track;
         }))
         .then(storeTracks)
-      //  .then(callback)
+        .then(callback)
         .then(() => collectAllAlbumTracks(albums, callback))
     }
   }
