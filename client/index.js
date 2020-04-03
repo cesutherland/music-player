@@ -37,6 +37,15 @@ const getJob = () => axios({
   withCredentials: true
 }).then(jobAction);
 
+const getTracks = () => axios({
+  method: 'get',
+  url: api.base + '/api/tracks',
+  withCredentials: true
+}).then(res => {
+  tracksAction(res.data);
+  render();
+});
+
 axios({
   method: 'get',
   url: api.base + '/init',
@@ -60,6 +69,11 @@ axios({
     jobProgressAction(data);
     render();
   });
+  connection.on('job', (data) => {
+    jobAction(data);
+    getTracks();
+    render();
+  });
   data.job ? jobAction(data.job) : getJob();
 
   // Player set up:
@@ -78,14 +92,7 @@ axios({
   );
 
   // Tracks:
-  axios({
-    method: 'get',
-    url: api.base + '/api/tracks',
-    withCredentials: true
-  }).then(res => {
-    tracksAction(res.data);
-    render();
-  });
+  getTracks();
 
   // Initiaal render;
   render();

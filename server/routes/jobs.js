@@ -59,7 +59,14 @@ const job = (req, res) => {
                 error: error
               })
             })
-          );
+          )
+          .then(() => store.findJob(userId))
+          .then(job => {
+            const socket = req.getSocket();
+            if (socket) {
+              socket.emit('job', job);
+            }
+          }, error => console.error(error));
       });
 
       return job;
