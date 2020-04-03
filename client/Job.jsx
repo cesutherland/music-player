@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 
 // {
 //   tracks: {total: 1061, progress: 1061},
@@ -10,30 +11,37 @@ const Job = (job, jobProgress) => {
 
   const importing = !job || job.finished;
   const types = ['tracks', 'albums', 'playlists'];
-  const hasProgress = types.reduce((hasProgress, type) => hasProgress || jobProgress[type].progress);
+  const hasProgress = types.reduce(
+    (hasProgress, type) => hasProgress || !!(jobProgress[type] && jobProgress[type].progress),
+    false
+  );
 
   const Progress = (type) => {
     const data = jobProgress[type];
     const progress = data && formatPercent(data.progress/data.total) || 0;
-    const active = progress != 0 && progress != 100;
+    const done = progress === 100;
+    const waiting = progress === 0;
+    const active = !done && !waiting;
     return (
-      <div className={active ? 'row active' : 'row'}>
-        <div className="col-xs-6 text-right">{type}:</div>
-        <div className="col-xs-6 text-left">{progress}%</div>
-      </div>
+      <li className={classNames({done, waiting, active})}>
+        {done && <span className="glyphicon glyphicon-ok"></span>}
+        {active && <span className="glyphicon glyphicon-repeat"></span>}
+        {waiting && <span className="glyphicon glyphicon-time"></span>}
+        &nbsp;{type} ({progress}%)
+      </li>
     );
   }
 
   return (
     <div className="splash job-progress">
       {!job && <div>loading...</div>}
-      {job && !hasProgress && <div>preparing import</div>}
+      {job && !hasProgress && <div>preparing import...</div>}
       {hasProgress && (
         <div>
-          <div className="row">
-            <div className="col-xs-6 text-right">importing...</div>
-          </div>
-          {types.map(type => Progress(type))}
+          <div>importing collection...</div>
+          <ul className="list-unstyled">
+            {types.map(type => Progress(type))}
+          </ul>
         </div>
       )}
     </div>

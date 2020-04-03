@@ -35,8 +35,30 @@ body {
 .job-progress {
   color: #888;
   font-size: 44px;
+  .waiting {
+    color: #555;
+  }
   .active {
     color: #bbb;
+  }
+  ul {
+    .list-unstyled();
+    display: inline-block;
+    text-align: left;
+  }
+  .glyphicon {
+    font-size: 32px;
+  }
+  .glyphicon-repeat {
+    animation: spin 2s infinite linear;
+  }
+}
+@keyframes spin {
+  from {
+    transform:rotate(0deg);
+  }
+  to {
+    transform:rotate(360deg);
   }
 }
 
