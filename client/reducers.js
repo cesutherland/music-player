@@ -26,13 +26,13 @@ export default combineReducers({
     }
     return state;
   },
-  jobProgress: (state = null, action) => {
+  jobProgress: (state = {}, action) => {
     switch(action.type) {
       case 'JOB_PROGRESS': return action.jobProgress;
     }
     return state;
   },
-  job: (state = null, action) => {
+  job: (state = {}, action) => {
     switch(action.type) {
       case 'JOB': return action.job;
     }

@@ -8,14 +8,34 @@ import player       from './player';
 import store        from './store';
 import { api }      from './config';
 
-function render(state) {
-  ReactDOM.render(
-    <Provider store={store}>{router(state)}</Provider>,
-    document.getElementById('layout')
-  );
-}
+const render = () => ReactDOM.render(
+  <Provider store={store}>{router(store.getState())}</Provider>,
+  document.getElementById('layout')
+);
 
-store.subscribe(() => render(store.getState()));
+const jobAction = (job) => 
+  store.dispatch({type: 'JOB', job});
+
+const jobProgressAction = (jobProgress) => 
+  store.dispatch({type: 'JOB_PROGRESS', jobProgress});
+
+const authAction = (authentication) => 
+  store.dispatch({type: 'AUTHENTICATION', authentication});
+
+const playerDeviceAction = (id) =>
+  store.dispatch({type: 'PLAYER_DEVICE_ID', id});
+
+const playerStateAction = (data) =>
+  store.dispatch({type: 'PLAYER_STATE', data});
+
+const tracksAction = (tracks) =>
+  store.dispatch({type: 'TRACKS', tracks});
+
+const getJob = () => axios({
+  method: 'get',
+  url: api.base + '/job',
+  withCredentials: true
+}).then(jobAction);
 
 axios({
   method: 'get',
@@ -24,42 +44,25 @@ axios({
 }).then(response => {
 
   const data = response.data;
+
+  // Auth:
   const loggedIn = data.access_token ? true : false;
-  const authentication = {
+  if (!loggedIn) return render();
+  authAction({
     loggedIn: loggedIn,
     accessToken: data.access_token,
     email: data.email
-  };
-  const state = {
-    job: data.job,
-    tracks: [],
-    authentication: authentication
-  };
-
-  if (!loggedIn) {
-    render(state);
-    return;
-  }
-
-  const getJob = () => axios({
-    method: 'get',
-    url: api.base + '/job',
-    withCredentials: true
-  }).then(job => store.dispatch({type: 'JOB', job}));
-
-  // Socket connection
-  const connection = socket(api.base);
-  connection.on('job-progress', jobProgress => {
-    store.dispatch({type: 'JOB_PROGRESS', jobProgress})
-    if (jobProgress.playlists.progress == jobProgress.playlists.total) {
-      window.location.reload();
-    }
   });
 
-  store.dispatch({type: 'AUTHENTICATION', authentication});
+  // Jobs connection
+  const connection = socket(api.base);
+  connection.on('job-progress', (data) => {
+    jobProgressAction(data);
+    render();
+  });
+  data.job ? jobAction(data.job) : getJob();
 
-  if (!state.job) getJob();
-
+  // Player set up:
   player.init(
     () => axios({
       method: 'get',
@@ -68,25 +71,22 @@ axios({
     }).then(res => res.data.access_token),
     (event, data) => {
       switch (event) {
-        case 'deviceId': store.dispatch({
-          type: 'PLAYER_DEVICE_ID',
-          id: data
-        });
-        case 'state': store.dispatch({
-          type: 'PLAYER_STATE',
-          data: data
-        });
+        case 'deviceId': return playerDeviceAction(data);
+        case 'state': return playerStateAction(data);
       }
     }
   );
 
+  // Tracks:
   axios({
     method: 'get',
     url: api.base + '/api/tracks',
     withCredentials: true
   }).then(res => {
-    const tracks = state.tracks = res.data;
-    store.dispatch({type: 'TRACKS', tracks});
-    render(state);
+    tracksAction(res.data);
+    render();
   });
+
+  // Initiaal render;
+  render();
 });
