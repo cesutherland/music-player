@@ -19,6 +19,7 @@
   "dependencies": {
     "axios": "^0.19.2",
     "bootstrap": "^3.4.1",
+    "classnames": "^2.2.6",
     "connect-memcached": "^0.2.0",
     "connect-session-knex": "^1.6.0",
     "cors": "^2.8.5",
