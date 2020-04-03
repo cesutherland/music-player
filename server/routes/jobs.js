@@ -16,6 +16,10 @@ const getResultMetadata = (result) => ({
   progress: 0,
 });
 
+const jobUpdates = {};
+const progress = (jobId) => {
+  return jobUpdates[jobId] || null;
+};
 
 const job = (req, res) => {
 
@@ -33,14 +37,17 @@ const job = (req, res) => {
 
       // Collect tracks:
       getMetadata(spotify).then(metadata => {
+
         const updateJob = (callback) => () => {
           console.log(`update: ${JSON.stringify(metadata)}`);
           const socket = req.getSocket();
-          callback();
+          callback && callback();
+          jobUpdates[job.id] = metadata;
           if (socket) {
             socket.emit('job-progress', metadata);
           }
         };
+
         return spotify
           .collectTracks()
           .then(tracks => storeTracks(tracks, updateJob(() => metadata.tracks.progress++)))
@@ -66,6 +73,7 @@ const job = (req, res) => {
             if (socket) {
               socket.emit('job', job);
             }
+            jobUpdates[job.id] = null;
           }, error => console.error(error));
       });
 
@@ -123,6 +131,8 @@ const job = (req, res) => {
     );
 };
 
+export { progress };
+
 export default {
-  job
+  job,
 };

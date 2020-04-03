@@ -75,6 +75,7 @@ axios({
     render();
   });
   data.job ? jobAction(data.job) : getJob();
+  data.jobProgress && jobProgressAction(data.jobProgress);
 
   // Player set up:
   player.init(

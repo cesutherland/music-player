@@ -1,4 +1,5 @@
 import config from '../../config';
+import {progress} from './jobs';
 
 const logout = (req, res) => {
   return req.session.destroy((err) => {
@@ -14,13 +15,14 @@ const init = (req, res) => {
   }
 
   return req.store.findOAuth(userId).then(user =>
-    req.store.findJob(userId).then(job =>
-      res.send({
+    req.store.findJob(userId).then(job => {
+      return res.send({
         job: job || null,
+        jobProgress: job && progress(job.id) || null,
         email: user.email,
         access_token: user.access_token
       })
-    )
+    })
   );
 };
 
