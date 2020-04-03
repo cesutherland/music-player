@@ -13,7 +13,10 @@ mix
   .browserSync({
     open: false,
     port: 8080,
-    proxy: 'localhost:3000'
+    proxy: 'localhost:3000',
+    minify: false,
+    // Fix for less not loading? using hot for now
+    // reloadDelay: 1000,
   })
   .webpackConfig({
     plugins: [
