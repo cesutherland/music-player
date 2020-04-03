@@ -1,8 +1,8 @@
 import axios   from 'axios';
 import Promise from 'promise';
 
-let fetchToken = () => {};
 let trigger    = () => {};
+let fetchToken = null;
 let resolve    = null;
 let reject     = null;
 
@@ -18,7 +18,7 @@ player.init = (initFetchToken, initTrigger) => {
 
 const getOAuthToken = (callback) => {
   console.info('fetching token...');
-  fetchToken().then(token => callback(token));
+  fetchToken && fetchToken().then(token => callback(token));
 };
 
 const errors = [
