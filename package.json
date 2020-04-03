@@ -48,5 +48,10 @@
     "less": "^3.11.1",
     "less-loader": "^5.0.0",
     "nodemon": "^2.0.2"
+  },
+  "nodemonConfig": {
+    "watch": [
+      "server/"
+    ]
   }
 }
