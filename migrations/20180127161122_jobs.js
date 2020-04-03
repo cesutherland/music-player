@@ -8,7 +8,7 @@ exports.up = function(knex) {
       table.dateTime('created');
       table.dateTime('finished');
       table.json('job');
-      table.collate('utf8_unicode_ci')
+      //table.collate('utf8_unicode_ci')
     }),
   ]);
 };

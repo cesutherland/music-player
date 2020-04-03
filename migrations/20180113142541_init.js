@@ -10,27 +10,27 @@ exports.up = function(knex) {
       table.string('refresh_token', 1024);
       table.integer('expires');
       table.boolean('connected');
-      table.collate('utf8_unicode_ci')
+      //table.collate('utf8_unicode_ci')
     }),
 
     knex.schema.createTable('tracks', function (table) {
       table.increments('id').primary().index();
       table.string('foreign_id', 1024).unique();
       table.json('track');
-      table.collate('utf8_unicode_ci')
+      //table.collate('utf8_unicode_ci')
     }),
 
     knex.schema.createTable('user_tracks', function (table) {
       table.integer('user_id').index();
       table.integer('track_id').index();
       table.primary(['user_id', 'track_id']);
-      table.collate('utf8_unicode_ci')
+      //table.collate('utf8_unicode_ci')
     }),
 
     knex.schema.createTable('users', function (table) {
       table.increments('id').primary().index();
       table.string('email', 255).unique();
-      table.collate('utf8_unicode_ci')
+      //table.collate('utf8_unicode_ci')
     })
   ]);
 };
