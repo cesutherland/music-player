@@ -83,6 +83,10 @@ export default (knex) => ({
     };
     return knex('user_tracks')
       .insert(userTrack)
-      .catch(error => console.error(error));
+      .catch(error => {
+        if (error.code != 'SQLITE_CONSTRAINT') {
+          throw error;
+        }
+      })
   }
 });
