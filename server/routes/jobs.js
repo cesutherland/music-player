@@ -35,47 +35,56 @@ const job = (req, res) => {
 
       if (!job) console.error('no job');
 
-      // Collect tracks:
-      getMetadata(spotify).then(metadata => {
+      let metadata = null;
 
-        const updateJob = (callback) => () => {
-          console.log(`update: ${JSON.stringify(metadata)}`);
-          const socket = req.getSocket();
-          callback && callback();
-          jobUpdates[job.id] = metadata;
-          if (socket) {
-            socket.emit('job-progress', metadata);
-          }
-        };
+      const updateJob = (callback) => () => {
+        console.log(`update: ${JSON.stringify(metadata)}`);
+        const socket = req.getSocket();
+        callback && callback();
+        jobUpdates[job.id] = metadata;
+        if (socket) {
+          socket.emit('job-progress', metadata);
+        }
+      };
 
-        return spotify
-          .collectTracks()
+      const importTracks = () =>
+        spotify.collectTracks()
           .then(tracks => storeTracks(tracks, updateJob(() => metadata.tracks.progress++)))
-          .then(() => spotify.collectAlbums())
+
+      const importAlbums = () =>
+        spotify.collectAlbums()
           .then(list => { console.log(`albums: ${list.length}`); return list; })
           .then(list => collectAllAlbumTracks(list, updateJob(() => metadata.albums.progress++)))
-          .then(() => spotify.collectPlaylists())
+
+      const importPlaylists = () =>
+        spotify.collectPlaylists()
           .then(playlists => { console.log('playlists: '+playlists.length); return playlists; })
           .then(playlists => collectAllPlaylistTracks(playlists, updateJob(() => metadata.playlists.progress++)))
-          .then(tracks => null, error => error)
-          .then(error => knex('jobs')
-            .where({id: job.id})
-            .update({
-              finished: new Date(),
-              job: JSON.stringify({
-                error: error
-              })
+
+      // Collect tracks:
+      getMetadata(spotify)
+        .then(m => metadata = m)
+      //.then(importTracks)
+      //.then(importAlbums)
+        .then(importPlaylists)
+        .then(null, error => error)
+        .then(error => knex('jobs')
+          .where({id: job.id})
+          .update({
+            finished: new Date(),
+            job: JSON.stringify({
+              error: error
             })
-          )
-          .then(() => store.findJob(userId))
-          .then(job => {
-            const socket = req.getSocket();
-            if (socket) {
-              socket.emit('job', job);
-            }
-            jobUpdates[job.id] = null;
-          }, error => console.error(error));
-      });
+          })
+        )
+        .then(() => store.findJob(userId))
+        .then(job => {
+          const socket = req.getSocket();
+          if (socket) {
+            socket.emit('job', job);
+          }
+          jobUpdates[job.id] = null;
+        }, error => console.error(error));
 
       return job;
     });
