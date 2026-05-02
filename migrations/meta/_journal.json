@@ -8,6 +8,13 @@
       "when": 1777728180002,
       "tag": "0000_conscious_selene",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1777750345550,
+      "tag": "0001_friendly_stark_industries",
+      "breakpoints": true
     }
   ]
 }

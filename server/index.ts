@@ -5,6 +5,9 @@ import staticPlugin from '@fastify/static';
 import cookie from '@fastify/cookie';
 import secureSession from '@fastify/secure-session';
 import { registerAuthRoutes } from './auth/routes';
+import { registerImportRoutes } from './api/import';
+import { setupSocketIO } from './realtime/io';
+import { startWorkers } from './jobs/queue';
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
@@ -31,6 +34,7 @@ await app.register(secureSession, {
 
 app.get('/api/health', async () => ({ ok: true }));
 await registerAuthRoutes(app);
+await registerImportRoutes(app);
 
 if (process.env.NODE_ENV === 'production') {
   // Compiled layout: dist/server/server/index.js + dist/client/...
@@ -42,3 +46,6 @@ if (process.env.NODE_ENV === 'production') {
 
 const port = Number(process.env.PORT ?? 3000);
 await app.listen({ port, host: '127.0.0.1' });
+
+setupSocketIO(app);
+startWorkers();
