@@ -103,6 +103,59 @@ export const user_saved_tracks = sqliteTable(
   t => ({ pk: primaryKey({ columns: [t.user_id, t.track_id] }) }),
 );
 
+export const user_saved_albums = sqliteTable(
+  'user_saved_albums',
+  {
+    user_id: integer('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    album_id: integer('album_id')
+      .notNull()
+      .references(() => albums.id, { onDelete: 'cascade' }),
+    added_at: integer('added_at', { mode: 'timestamp' }).notNull(),
+  },
+  t => ({ pk: primaryKey({ columns: [t.user_id, t.album_id] }) }),
+);
+
+export const playlists = sqliteTable('playlists', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  spotify_id: text('spotify_id').notNull().unique(),
+  name: text('name').notNull(),
+  owner_id: text('owner_id').notNull(),
+  snapshot_id: text('snapshot_id'),
+  imported_at: integer('imported_at', { mode: 'timestamp' })
+    .notNull()
+    .$defaultFn(() => new Date()),
+});
+
+export const user_playlists = sqliteTable(
+  'user_playlists',
+  {
+    user_id: integer('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    playlist_id: integer('playlist_id')
+      .notNull()
+      .references(() => playlists.id, { onDelete: 'cascade' }),
+  },
+  t => ({ pk: primaryKey({ columns: [t.user_id, t.playlist_id] }) }),
+);
+
+export const playlist_tracks = sqliteTable(
+  'playlist_tracks',
+  {
+    playlist_id: integer('playlist_id')
+      .notNull()
+      .references(() => playlists.id, { onDelete: 'cascade' }),
+    track_id: integer('track_id')
+      .notNull()
+      .references(() => tracks.id, { onDelete: 'cascade' }),
+    position: integer('position').notNull(),
+    added_at: integer('added_at', { mode: 'timestamp' }),
+  },
+  t => ({ pk: primaryKey({ columns: [t.playlist_id, t.position] }) }),
+);
+
 export const jobs = sqliteTable(
   'jobs',
   {

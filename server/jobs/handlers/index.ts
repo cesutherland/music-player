@@ -2,20 +2,16 @@ import type { Job } from '../queue';
 import type { JobKind } from '../../../shared/jobs';
 import { importOrchestrator } from './import-orchestrator';
 import { importSavedTracksPage } from './import-saved-tracks-page';
+import { importSavedAlbumsPage } from './import-saved-albums-page';
+import { importPlaylistsPage } from './import-playlists-page';
+import { importPlaylistItemsPage } from './import-playlist-items-page';
 
 export const HANDLERS: Record<JobKind, (job: Job) => Promise<void>> = {
   'import-orchestrator': importOrchestrator,
   'import-saved-tracks-page': importSavedTracksPage,
-  // Stubs for slices 4–5; the queue won't enqueue them until those slices land.
-  'import-saved-albums-page': async () => {
-    throw new Error('not implemented (slice 4)');
-  },
-  'import-playlists-page': async () => {
-    throw new Error('not implemented (slice 4)');
-  },
-  'import-playlist-items-page': async () => {
-    throw new Error('not implemented (slice 4)');
-  },
+  'import-saved-albums-page': importSavedAlbumsPage,
+  'import-playlists-page': importPlaylistsPage,
+  'import-playlist-items-page': importPlaylistItemsPage,
   'hydrate-artist': async () => {
     throw new Error('not implemented (slice 5)');
   },

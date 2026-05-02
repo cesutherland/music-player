@@ -26,8 +26,9 @@ export type SpotifyTrack = {
   duration_ms?: number;
   explicit?: boolean;
   is_local?: boolean;
-  album: SpotifyAlbum;
+  album?: SpotifyAlbum;
   artists: SpotifyArtist[];
+  type?: string;
 };
 
 export function upsertArtist(a: SpotifyArtist): number {
@@ -81,8 +82,12 @@ export function upsertAlbum(a: SpotifyAlbum): number {
   return albumId;
 }
 
-export function upsertTrack(t: SpotifyTrack): number {
-  const albumId = upsertAlbum(t.album);
+export function upsertTrack(t: SpotifyTrack, knownAlbumId?: number): number {
+  const albumId =
+    knownAlbumId ??
+    (t.album ? upsertAlbum(t.album) : (() => {
+      throw new Error(`upsertTrack(${t.id}): no album info and no knownAlbumId`);
+    })());
   const existing = db
     .select({ id: tracks.id })
     .from(tracks)

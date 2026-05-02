@@ -15,6 +15,13 @@
       "when": 1777750345550,
       "tag": "0001_friendly_stark_industries",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1777751535275,
+      "tag": "0002_nosy_nocturne",
+      "breakpoints": true
     }
   ]
 }

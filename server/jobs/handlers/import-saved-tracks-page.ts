@@ -3,7 +3,7 @@ import { user_saved_tracks } from '../../../shared/db/schema';
 import { spotifyFetch } from '../../spotify/client';
 import { enqueue, type Job } from '../queue';
 import { upsertTrack, type SpotifyTrack } from '../upserts';
-import { emitProgress, maybeEmitDone } from '../progress';
+import { emitProgress } from '../progress';
 
 type SavedTracksPage = {
   items: { added_at: string; track: SpotifyTrack | null }[];
@@ -34,9 +34,6 @@ export async function importSavedTracksPage(job: Job): Promise<void> {
       kind: 'import-saved-tracks-page',
       payload: { url: data.next.replace('https://api.spotify.com/v1', '') },
     });
-    emitProgress(job.user_id);
-  } else {
-    emitProgress(job.user_id);
-    maybeEmitDone(job.user_id, true);
   }
+  emitProgress(job.user_id);
 }

@@ -5,7 +5,7 @@ import type { JobKind } from '../../shared/jobs';
 import { JOB_KINDS } from '../../shared/jobs';
 import { RateLimited } from '../spotify/client';
 import { HANDLERS } from './handlers';
-import { maybeEmitDone } from './progress';
+import { isImportComplete, maybeEmitDone } from './progress';
 
 export type Job = typeof jobs.$inferSelect;
 
@@ -79,6 +79,9 @@ async function runOnce(kind: JobKind): Promise<void> {
   try {
     await HANDLERS[kind](job);
     db.update(jobs).set({ status: 'done' }).where(eq(jobs.id, job.id)).run();
+    if (kind !== 'import-orchestrator' && isImportComplete(job.user_id)) {
+      maybeEmitDone(job.user_id, true);
+    }
   } catch (e) {
     const isRate = e instanceof RateLimited;
     const wait = isRate ? e.seconds * 1000 : Math.min(60_000, 2 ** job.attempts * 1000);
