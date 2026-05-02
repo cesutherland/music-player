@@ -1,6 +1,20 @@
-node_modules
+node_modules/
+dist/
+data/
+*.sqlite
+*.sqlite-journal
+*.sqlite-shm
+*.sqlite-wal
+.env
+.env.local
+
+# Legacy assets, kept while the new tree grows; removed in slice 8.
 public/
 build/
 dev.sqlite3
-knexfile.js
-.env
+dev.data.sqlite3
+legacy-knexfile.js
+
+# Tooling
+.vite/
+*.log
