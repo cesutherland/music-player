@@ -6,6 +6,8 @@ import cookie from '@fastify/cookie';
 import secureSession from '@fastify/secure-session';
 import { registerAuthRoutes } from './auth/routes';
 import { registerImportRoutes } from './api/import';
+import { registerFacetRoutes } from './api/facet';
+import { registerTrackRoutes } from './api/tracks';
 import { setupSocketIO } from './realtime/io';
 import { startWorkers } from './jobs/queue';
 
@@ -35,6 +37,8 @@ await app.register(secureSession, {
 app.get('/api/health', async () => ({ ok: true }));
 await registerAuthRoutes(app);
 await registerImportRoutes(app);
+await registerFacetRoutes(app);
+await registerTrackRoutes(app);
 
 if (process.env.NODE_ENV === 'production') {
   // Compiled layout: dist/server/server/index.js + dist/client/...

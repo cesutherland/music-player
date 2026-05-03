@@ -29,6 +29,20 @@
       "when": 1777752948049,
       "tag": "0003_reflective_sersi",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1777768623984,
+      "tag": "0004_rapid_bloodaxe",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1777769608750,
+      "tag": "0005_friendly_changeling",
+      "breakpoints": true
     }
   ]
 }

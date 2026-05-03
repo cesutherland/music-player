@@ -48,22 +48,28 @@ export const albums = sqliteTable('albums', {
     .$defaultFn(() => new Date()),
 });
 
-export const tracks = sqliteTable('tracks', {
-  id: integer('id').primaryKey({ autoIncrement: true }),
-  spotify_id: text('spotify_id').notNull().unique(),
-  name: text('name').notNull(),
-  album_id: integer('album_id')
-    .notNull()
-    .references(() => albums.id, { onDelete: 'cascade' }),
-  disc_number: integer('disc_number'),
-  track_number: integer('track_number'),
-  duration_ms: integer('duration_ms'),
-  explicit: integer('explicit', { mode: 'boolean' }),
-  is_local: integer('is_local', { mode: 'boolean' }),
-  imported_at: integer('imported_at', { mode: 'timestamp' })
-    .notNull()
-    .$defaultFn(() => new Date()),
-});
+export const tracks = sqliteTable(
+  'tracks',
+  {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    spotify_id: text('spotify_id').notNull().unique(),
+    name: text('name').notNull(),
+    album_id: integer('album_id')
+      .notNull()
+      .references(() => albums.id, { onDelete: 'cascade' }),
+    disc_number: integer('disc_number'),
+    track_number: integer('track_number'),
+    duration_ms: integer('duration_ms'),
+    explicit: integer('explicit', { mode: 'boolean' }),
+    is_local: integer('is_local', { mode: 'boolean' }),
+    imported_at: integer('imported_at', { mode: 'timestamp' })
+      .notNull()
+      .$defaultFn(() => new Date()),
+  },
+  t => ({
+    by_album: index('tracks_album_id').on(t.album_id),
+  }),
+);
 
 export const album_artists = sqliteTable(
   'album_artists',
@@ -75,7 +81,10 @@ export const album_artists = sqliteTable(
       .notNull()
       .references(() => artists.id, { onDelete: 'cascade' }),
   },
-  t => ({ pk: primaryKey({ columns: [t.album_id, t.artist_id] }) }),
+  t => ({
+    pk: primaryKey({ columns: [t.album_id, t.artist_id] }),
+    by_artist: index('album_artists_artist_id').on(t.artist_id),
+  }),
 );
 
 export const track_artists = sqliteTable(
@@ -88,7 +97,10 @@ export const track_artists = sqliteTable(
       .notNull()
       .references(() => artists.id, { onDelete: 'cascade' }),
   },
-  t => ({ pk: primaryKey({ columns: [t.track_id, t.artist_id] }) }),
+  t => ({
+    pk: primaryKey({ columns: [t.track_id, t.artist_id] }),
+    by_artist: index('track_artists_artist_id').on(t.artist_id),
+  }),
 );
 
 export const user_saved_tracks = sqliteTable(
@@ -102,7 +114,10 @@ export const user_saved_tracks = sqliteTable(
       .references(() => tracks.id, { onDelete: 'cascade' }),
     added_at: integer('added_at', { mode: 'timestamp' }).notNull(),
   },
-  t => ({ pk: primaryKey({ columns: [t.user_id, t.track_id] }) }),
+  t => ({
+    pk: primaryKey({ columns: [t.user_id, t.track_id] }),
+    by_track: index('user_saved_tracks_track_id').on(t.track_id),
+  }),
 );
 
 export const user_saved_albums = sqliteTable(
@@ -116,7 +131,10 @@ export const user_saved_albums = sqliteTable(
       .references(() => albums.id, { onDelete: 'cascade' }),
     added_at: integer('added_at', { mode: 'timestamp' }).notNull(),
   },
-  t => ({ pk: primaryKey({ columns: [t.user_id, t.album_id] }) }),
+  t => ({
+    pk: primaryKey({ columns: [t.user_id, t.album_id] }),
+    by_album: index('user_saved_albums_album_id').on(t.album_id),
+  }),
 );
 
 export const playlists = sqliteTable('playlists', {
@@ -140,7 +158,10 @@ export const user_playlists = sqliteTable(
       .notNull()
       .references(() => playlists.id, { onDelete: 'cascade' }),
   },
-  t => ({ pk: primaryKey({ columns: [t.user_id, t.playlist_id] }) }),
+  t => ({
+    pk: primaryKey({ columns: [t.user_id, t.playlist_id] }),
+    by_playlist: index('user_playlists_playlist_id').on(t.playlist_id),
+  }),
 );
 
 export const playlist_tracks = sqliteTable(
@@ -155,8 +176,18 @@ export const playlist_tracks = sqliteTable(
     position: integer('position').notNull(),
     added_at: integer('added_at', { mode: 'timestamp' }),
   },
-  t => ({ pk: primaryKey({ columns: [t.playlist_id, t.position] }) }),
+  t => ({
+    pk: primaryKey({ columns: [t.playlist_id, t.position] }),
+    by_track: index('playlist_tracks_track_id').on(t.track_id),
+  }),
 );
+
+export const user_facet_chains = sqliteTable('user_facet_chains', {
+  user_id: integer('user_id')
+    .primaryKey()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  chain: text('chain', { mode: 'json' }).$type<string[]>().notNull(),
+});
 
 export const jobs = sqliteTable(
   'jobs',
