@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Sidebar } from './Sidebar';
 import { Tracks } from './Tracks';
+import { Player } from './Player';
 import { disconnectSocket } from './socket';
 import type { Me } from './auth';
 
@@ -50,9 +51,7 @@ export function Layout({ me }: { me: Me }) {
           <Tracks />
         </main>
       </div>
-      <footer className="shrink-0 border-t border-zinc-800 px-4 py-2 text-xs text-zinc-500">
-        Player coming in slice 7.
-      </footer>
+      <Player />
     </div>
   );
 }

@@ -3,6 +3,8 @@ import { useQuery } from '@tanstack/react-query';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import type { FacetChain } from '../shared/facets';
 import { useUi } from './store/ui';
+import { playUris } from './playback/play';
+import { usePlayback } from './playback/store';
 
 type Track = {
   id: number;
@@ -52,12 +54,25 @@ export function Tracks() {
 
   const parentRef = useRef<HTMLDivElement>(null);
   const tracks = q.data?.tracks ?? [];
+  const ready = usePlayback(s => s.ready);
+  const currentUri = usePlayback(s => s.current?.uri ?? null);
   const virt = useVirtualizer({
     count: tracks.length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => 36,
     overscan: 12,
   });
+
+  const allUris = tracks.map(t => `spotify:track:${t.spotify_id}`);
+
+  function playOne(idx: number) {
+    if (!ready) return;
+    void playUris([allUris[idx]]);
+  }
+  function playAllFrom(idx: number) {
+    if (!ready) return;
+    void playUris(allUris, idx);
+  }
 
   if (selection === null) {
     return (
@@ -95,6 +110,8 @@ export function Tracks() {
       <div style={{ height: virt.getTotalSize(), position: 'relative' }}>
         {virt.getVirtualItems().map(v => {
           const t = tracks[v.index];
+          const trackUri = `spotify:track:${t.spotify_id}`;
+          const isPlaying = trackUri === currentUri;
           return (
             <div
               key={t.id}
@@ -106,12 +123,19 @@ export function Tracks() {
                 transform: `translateY(${v.start}px)`,
                 height: v.size,
               }}
-              className="grid grid-cols-[40px_1fr_1fr_1fr_60px] items-center gap-2 px-4 text-sm text-zinc-300 hover:bg-zinc-900"
+              onClick={() => playOne(v.index)}
+              onDoubleClick={() => playAllFrom(v.index)}
+              className={`grid cursor-pointer grid-cols-[40px_1fr_1fr_1fr_60px] items-center gap-2 px-4 text-sm hover:bg-zinc-900 ${
+                isPlaying ? 'bg-emerald-900/30 text-emerald-100' : 'text-zinc-300'
+              }`}
+              title="click: play this track · double-click: play this and the rest"
             >
               <span className="text-xs text-zinc-500">
-                {t.disc_number != null && t.track_number != null
-                  ? `${t.disc_number}.${t.track_number}`
-                  : t.track_number ?? ''}
+                {isPlaying
+                  ? '▶'
+                  : t.disc_number != null && t.track_number != null
+                    ? `${t.disc_number}.${t.track_number}`
+                    : (t.track_number ?? '')}
               </span>
               <span className="truncate" title={t.name}>
                 {t.name}

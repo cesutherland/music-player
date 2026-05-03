@@ -8,6 +8,7 @@ import { registerAuthRoutes } from './auth/routes';
 import { registerImportRoutes } from './api/import';
 import { registerFacetRoutes } from './api/facet';
 import { registerTrackRoutes } from './api/tracks';
+import { registerPlaybackRoutes } from './api/playback';
 import { setupSocketIO } from './realtime/io';
 import { startWorkers } from './jobs/queue';
 
@@ -20,7 +21,24 @@ if (!process.env.SPOTIFY_CLIENT_ID) {
   throw new Error('SPOTIFY_CLIENT_ID is required');
 }
 
-const app = Fastify({ logger: true });
+const isProd = process.env.NODE_ENV === 'production';
+const app = Fastify({
+  logger: isProd
+    ? true
+    : {
+        level: 'info',
+        transport: {
+          target: 'pino-pretty',
+          options: {
+            colorize: true,
+            translateTime: 'HH:MM:ss.l',
+            ignore: 'pid,hostname,reqId,req,res,responseTime',
+            singleLine: false,
+            messageFormat: '{msg}',
+          },
+        },
+      },
+});
 
 await app.register(cookie);
 await app.register(secureSession, {
@@ -39,6 +57,7 @@ await registerAuthRoutes(app);
 await registerImportRoutes(app);
 await registerFacetRoutes(app);
 await registerTrackRoutes(app);
+await registerPlaybackRoutes(app);
 
 if (process.env.NODE_ENV === 'production') {
   // Compiled layout: dist/server/server/index.js + dist/client/...
