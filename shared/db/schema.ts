@@ -28,6 +28,8 @@ export const artists = sqliteTable('artists', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   spotify_id: text('spotify_id').notNull().unique(),
   name: text('name').notNull(),
+  genres: text('genres', { mode: 'json' }).$type<string[]>(),
+  genres_hydrated_at: integer('genres_hydrated_at', { mode: 'timestamp' }),
   imported_at: integer('imported_at', { mode: 'timestamp' })
     .notNull()
     .$defaultFn(() => new Date()),

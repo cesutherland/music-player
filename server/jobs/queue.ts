@@ -6,11 +6,12 @@ import { JOB_KINDS } from '../../shared/jobs';
 import { RateLimited } from '../spotify/client';
 import { HANDLERS } from './handlers';
 import { isImportComplete, maybeEmitDone } from './progress';
+import { enqueueArtistHydration } from './hydration';
 
 export type Job = typeof jobs.$inferSelect;
 
 const MAX_ATTEMPTS = 5;
-const POLL_MS = 250;
+const POLL_MS = 100;
 
 export function enqueue(opts: {
   userId: number;
@@ -80,6 +81,9 @@ async function runOnce(kind: JobKind): Promise<void> {
     await HANDLERS[kind](job);
     db.update(jobs).set({ status: 'done' }).where(eq(jobs.id, job.id)).run();
     if (kind !== 'import-orchestrator' && isImportComplete(job.user_id)) {
+      // Importer is quiet — kick off (or finish) genre hydration before
+      // emitting done. Guard against re-firing from inside a hydration job.
+      if (kind !== 'hydrate-artist') enqueueArtistHydration(job.user_id);
       maybeEmitDone(job.user_id, true);
     }
   } catch (e) {

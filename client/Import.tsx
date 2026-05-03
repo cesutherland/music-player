@@ -106,6 +106,7 @@ function Bars({ p }: { p: ImportProgress }) {
       <Bar label="Tracks" {...p.tracks} />
       <Bar label="Albums" {...p.albums} />
       <Bar label="Playlists" {...p.playlists} />
+      <Bar label="Artist genres" {...p.artists} />
     </div>
   );
 }

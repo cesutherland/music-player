@@ -5,6 +5,7 @@ import { importSavedTracksPage } from './import-saved-tracks-page';
 import { importSavedAlbumsPage } from './import-saved-albums-page';
 import { importPlaylistsPage } from './import-playlists-page';
 import { importPlaylistItemsPage } from './import-playlist-items-page';
+import { hydrateArtist } from './hydrate-artist';
 
 export const HANDLERS: Record<JobKind, (job: Job) => Promise<void>> = {
   'import-orchestrator': importOrchestrator,
@@ -12,7 +13,5 @@ export const HANDLERS: Record<JobKind, (job: Job) => Promise<void>> = {
   'import-saved-albums-page': importSavedAlbumsPage,
   'import-playlists-page': importPlaylistsPage,
   'import-playlist-items-page': importPlaylistItemsPage,
-  'hydrate-artist': async () => {
-    throw new Error('not implemented (slice 5)');
-  },
+  'hydrate-artist': hydrateArtist,
 };

@@ -8,6 +8,7 @@ import {
 } from '../../shared/db/schema';
 import type { ImportProgress } from '../../shared/jobs';
 import { emit } from '../realtime/io';
+import { artistHydrationCounts } from './hydration';
 
 type OrchProgress = {
   totals?: { tracks?: number; albums?: number; playlists?: number };
@@ -43,7 +44,7 @@ export function computeProgress(userId: number): ImportProgress {
     tracks: { total: totals.tracks ?? 0, progress: countWhereUser(user_saved_tracks, userId) },
     albums: { total: totals.albums ?? 0, progress: countWhereUser(user_saved_albums, userId) },
     playlists: { total: totals.playlists ?? 0, progress: countWhereUser(user_playlists, userId) },
-    artists: { total: 0, progress: 0 },
+    artists: artistHydrationCounts(),
   };
 }
 
