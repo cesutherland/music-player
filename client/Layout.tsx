@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Sidebar } from './Sidebar';
 import { Tracks } from './Tracks';
 import { Player } from './Player';
-import { disconnectSocket } from './socket';
+import { disconnectSocket, useSocketConnected } from './socket';
 import type { Me } from './auth';
 
 export function Layout({ me }: { me: Me }) {
@@ -22,11 +22,21 @@ export function Layout({ me }: { me: Me }) {
     },
   });
 
+  const socketConnected = useSocketConnected();
+
   return (
     <div className="flex h-screen flex-col">
       <header className="flex shrink-0 items-center justify-between border-b border-zinc-800 px-4 py-2">
         <h1 className="text-lg font-semibold tracking-tight">altplayer</h1>
         <div className="flex items-center gap-3 text-sm">
+          {!socketConnected && (
+            <span
+              className="rounded bg-amber-900/40 px-2 py-0.5 text-xs text-amber-300"
+              title="Realtime updates are paused while the WebSocket is offline."
+            >
+              reconnecting…
+            </span>
+          )}
           <span className="text-zinc-400">
             {me.display_name ?? me.spotify_id}
           </span>
