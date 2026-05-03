@@ -8,13 +8,6 @@ data/
 .env
 .env.local
 
-# Legacy assets, kept while the new tree grows; removed in slice 8.
-public/
-build/
-dev.sqlite3
-dev.data.sqlite3
-legacy-knexfile.js
-
 # Tooling
 .vite/
 *.log
