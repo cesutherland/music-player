@@ -5,6 +5,11 @@ const SDK_SRC = 'https://sdk.scdn.co/spotify-player.js';
 let scriptLoading: Promise<void> | null = null;
 let player: SpotifyPlayer | null = null;
 let initPromise: Promise<SpotifyPlayer> | null = null;
+// Bumped by destroyPlayer to invalidate any in-flight init. Without
+// this, StrictMode's mount → cleanup → mount sequence could let a
+// pre-cleanup init's `.then(p => player = p)` clobber the second
+// init's player after we'd already nulled out state.
+let initGeneration = 0;
 
 function loadSdkScript(): Promise<void> {
   if (window.Spotify) return Promise.resolve();
@@ -70,6 +75,7 @@ export async function getOrInitPlayer(opts: {
   if (player) return player;
   if (initPromise) return initPromise;
 
+  const myGen = ++initGeneration;
   initPromise = (async () => {
     await loadSdkScript();
     if (!window.Spotify) throw new Error('spotify SDK not loaded');
@@ -124,6 +130,12 @@ export async function getOrInitPlayer(opts: {
 
     const ok = await p.connect();
     if (!ok) throw new Error('Spotify.Player.connect() returned false');
+    if (myGen !== initGeneration) {
+      // destroyPlayer fired during init — drop this player on the floor
+      // rather than letting it overwrite whatever's current.
+      try { p.disconnect(); } catch { /* ignore */ }
+      throw new Error('player init superseded by destroyPlayer');
+    }
     player = p;
     return p;
   })().catch(err => {
@@ -135,6 +147,7 @@ export async function getOrInitPlayer(opts: {
 }
 
 export function destroyPlayer(): void {
+  initGeneration++;
   if (player) {
     try {
       player.disconnect();
