@@ -106,6 +106,10 @@ migrations/              drizzle-kit migrations (5 so far)
 docs/crispy/             CRISPY workflow artifacts (design, plan, log)
 ```
 
+## Security notes
+
+This is a single-user, self-hosted app; the threat model assumes you control the host. In particular: Spotify access and refresh tokens are stored in plaintext in `altplayer.sqlite`. Anyone with read access to that file can resurrect a Spotify session indefinitely, so keep file permissions and backups scoped accordingly.
+
 ## License
 
 Personal project; not currently licensed for redistribution. Open an issue if you want to fork.
