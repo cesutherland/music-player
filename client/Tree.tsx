@@ -9,7 +9,8 @@ type LevelResp = { chain: FacetChain; nodes: FacetNode[] };
 function fetchLevel(chain: FacetChain, path: string[], search: string): Promise<LevelResp> {
   const params = new URLSearchParams();
   params.set('chain', chain.join(','));
-  if (path.length > 0) params.set('path', path.join('/'));
+  // Encode each segment so keys containing '/' (genres) round-trip.
+  if (path.length > 0) params.set('path', path.map(encodeURIComponent).join('/'));
   if (search.trim()) params.set('search', search.trim());
   const url =
     path.length === 0

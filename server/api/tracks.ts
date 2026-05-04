@@ -17,7 +17,10 @@ function parseChainParam(s: string | undefined): FacetChain {
 
 function parsePathParam(s: string | undefined): string[] {
   if (!s) return [];
-  return s.split('/').filter(p => p !== '');
+  return s
+    .split('/')
+    .filter(p => p !== '')
+    .map(decodeURIComponent);
 }
 
 export async function registerTrackRoutes(app: FastifyInstance) {

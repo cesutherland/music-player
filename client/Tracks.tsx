@@ -33,7 +33,7 @@ function fetchTracks(
 ): Promise<{ tracks: Track[] }> {
   const params = new URLSearchParams();
   params.set('chain', chain.join(','));
-  if (path.length > 0) params.set('path', path.join('/'));
+  if (path.length > 0) params.set('path', path.map(encodeURIComponent).join('/'));
   if (search.trim()) params.set('search', search.trim());
   return fetch(`/api/tracks?${params}`, { credentials: 'include' }).then(r => {
     if (!r.ok) throw new Error(`tracks: ${r.status}`);

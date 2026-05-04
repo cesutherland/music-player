@@ -26,8 +26,13 @@ function parseChainParam(s: string | undefined): FacetChain {
 
 function parsePathParam(s: string | undefined): string[] {
   if (!s) return [];
-  // Allow URL-encoded slashes via repeated commas if needed; for now use '/' split.
-  return s.split('/').filter(p => p !== '');
+  // Each segment is decodeURIComponent'd so keys containing '/' (e.g.
+  // user-defined genres) survive the round-trip. Client must encode
+  // each segment before joining with '/'.
+  return s
+    .split('/')
+    .filter(p => p !== '')
+    .map(decodeURIComponent);
 }
 
 export async function registerFacetRoutes(app: FastifyInstance) {
