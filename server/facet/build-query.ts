@@ -212,10 +212,12 @@ export function getLeafTracks(
   const where = buildWhere(chain, path, search, sql`t.name`);
 
   // user_tracks CTE narrows the working set; per-track artist names are
-  // aggregated inline to keep this a single round-trip.
+  // aggregated inline to keep this a single round-trip. user_tracks
+  // already deduplicates by track_id (UNION) and the joins below are PK
+  // joins, so no DISTINCT is needed.
   return db.all<LeafTrack>(sql`
     ${userTracksCte(userId)}
-    SELECT DISTINCT
+    SELECT
       t.id, t.spotify_id, t.name, t.disc_number, t.track_number, t.duration_ms,
       t.album_id,
       al.name AS album_name,
