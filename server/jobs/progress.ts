@@ -52,18 +52,18 @@ export function emitProgress(userId: number): void {
   emit(userId, 'import:progress', computeProgress(userId));
 }
 
-export function isImportComplete(userId: number, excludeJobId?: number): boolean {
-  const conds = [
-    eq(jobs.user_id, userId),
-    sql`${jobs.kind} != 'import-orchestrator'`,
-    sql`${jobs.status} in ('pending', 'running')`,
-  ];
-  if (excludeJobId !== undefined) conds.push(sql`${jobs.id} != ${excludeJobId}`);
+export function isImportComplete(userId: number): boolean {
   const c = Number(
     db
       .select({ c: sql<number>`count(*)` })
       .from(jobs)
-      .where(and(...conds))
+      .where(
+        and(
+          eq(jobs.user_id, userId),
+          sql`${jobs.kind} != 'import-orchestrator'`,
+          sql`${jobs.status} in ('pending', 'running')`,
+        ),
+      )
       .get()?.c ?? 0,
   );
   return c === 0;
