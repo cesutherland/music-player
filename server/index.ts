@@ -61,11 +61,20 @@ await registerFacetRoutes(app);
 await registerTrackRoutes(app);
 await registerPlaybackRoutes(app);
 
-if (process.env.NODE_ENV === 'production') {
+if (isProd) {
   // Compiled layout: dist/server/server/index.js + dist/client/...
+  const clientRoot = path.resolve(__dirname, '../../client');
   await app.register(staticPlugin, {
-    root: path.resolve(__dirname, '../../client'),
+    root: clientRoot,
     prefix: '/',
+  });
+  // SPA fallback: any non-/api GET that didn't match a static file gets
+  // index.html so client-side routing can take over.
+  app.setNotFoundHandler((req, reply) => {
+    if (req.method !== 'GET' || req.url.startsWith('/api/')) {
+      return reply.code(404).send({ error: 'not found' });
+    }
+    return reply.sendFile('index.html');
   });
 }
 
