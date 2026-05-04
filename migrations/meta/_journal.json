@@ -1,0 +1,48 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1777728180002,
+      "tag": "0000_conscious_selene",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1777750345550,
+      "tag": "0001_friendly_stark_industries",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1777751535275,
+      "tag": "0002_nosy_nocturne",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1777752948049,
+      "tag": "0003_reflective_sersi",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1777768623984,
+      "tag": "0004_rapid_bloodaxe",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1777769608750,
+      "tag": "0005_friendly_changeling",
+      "breakpoints": true
+    }
+  ]
+}
