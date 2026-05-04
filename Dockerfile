@@ -5,13 +5,14 @@ COPY package.json package-lock.json* ./
 RUN npm install
 COPY . .
 RUN npm run build
+# Strip dev deps in place so the runtime stage can copy node_modules
+# wholesale and avoid reinstalling (and avoid shipping the toolchain).
+RUN npm prune --omit=dev
 
 FROM node:24-alpine
 WORKDIR /app
-RUN apk add --no-cache python3 make g++ \
- && rm -rf /var/cache/apk/*
-COPY package.json package-lock.json* ./
-RUN npm install --omit=dev && npm cache clean --force
+COPY --from=build /app/package.json ./package.json
+COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/migrations ./migrations
 COPY --from=build /app/shared ./shared
