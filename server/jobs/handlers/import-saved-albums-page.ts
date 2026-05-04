@@ -6,7 +6,7 @@ import { upsertAlbum, upsertTrack, type SpotifyTrack } from '../upserts';
 import { emitProgress } from '../progress';
 
 type AlbumWithTracks = Parameters<typeof upsertAlbum>[0] & {
-  tracks?: { items: SpotifyTrack[]; total: number };
+  tracks?: { items: SpotifyTrack[]; total: number; next?: string | null };
 };
 type SavedAlbum = { added_at: string; album: AlbumWithTracks };
 type SavedAlbumsPage = { items: SavedAlbum[]; next: string | null; total: number };
@@ -29,6 +29,19 @@ export async function importSavedAlbumsPage(job: Job): Promise<void> {
     for (const t of item.album.tracks?.items ?? []) {
       if (t.is_local) continue;
       upsertTrack(t, albumId);
+    }
+    // Spotify embeds at most ~50 tracks inline; longer albums need a
+    // follow-up to /albums/{id}/tracks to pick up the rest.
+    const nextTracksUrl = item.album.tracks?.next;
+    if (nextTracksUrl) {
+      enqueue({
+        userId: job.user_id,
+        kind: 'import-album-tracks-page',
+        payload: {
+          album_id: albumId,
+          url: nextTracksUrl.replace('https://api.spotify.com/v1', ''),
+        },
+      });
     }
   }
   if (data.next) {

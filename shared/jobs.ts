@@ -2,6 +2,7 @@ export type JobKind =
   | 'import-orchestrator'
   | 'import-saved-tracks-page'
   | 'import-saved-albums-page'
+  | 'import-album-tracks-page'
   | 'import-playlists-page'
   | 'import-playlist-items-page'
   | 'hydrate-artist';
@@ -10,6 +11,7 @@ export const JOB_KINDS: JobKind[] = [
   'import-orchestrator',
   'import-saved-tracks-page',
   'import-saved-albums-page',
+  'import-album-tracks-page',
   'import-playlists-page',
   'import-playlist-items-page',
   'hydrate-artist',

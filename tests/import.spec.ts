@@ -233,6 +233,56 @@ describe('import smoke test', () => {
     expect(failed).toHaveLength(0);
   });
 
+  test('saved-albums follows tracks.next to pick up tracks past the inline page', async () => {
+    const T1 = mkTrack('t1', 'Track 1', ['a1'], 'al1');
+    const T2 = mkTrack('t2', 'Track 2', ['a1'], 'al1');
+    const T3 = mkTrack('t3', 'Track 3', ['a1'], 'al1');
+    const AL1 = mkAlbum('al1', ['a1']);
+
+    mockFetch.mockImplementation(async (_userId, path) => {
+      if (path === '/me/tracks?limit=1') return { total: 0 };
+      if (path === '/me/albums?limit=1') return { total: 1 };
+      if (path === '/me/playlists?limit=1') return { total: 0 };
+      if (path === '/me/tracks?limit=50') return { items: [], next: null, total: 0 };
+      if (path === '/me/playlists?limit=50') return { items: [], next: null, total: 0 };
+      if (path === '/me/albums?limit=50') {
+        return {
+          items: [
+            {
+              added_at: '2025-01-03T00:00:00Z',
+              album: {
+                ...AL1,
+                tracks: {
+                  items: [T1, T2],
+                  total: 3,
+                  next: 'https://api.spotify.com/v1/albums/al1/tracks?offset=2&limit=2',
+                },
+              },
+            },
+          ],
+          next: null,
+          total: 1,
+        };
+      }
+      if (path === '/albums/al1/tracks?offset=2&limit=2') {
+        return { items: [T3], next: null };
+      }
+      if (path === '/artists/a1') return { id: 'a1', name: 'A', genres: [] };
+      throw new Error(`unmocked: ${path}`);
+    });
+
+    const u = db
+      .insert(users)
+      .values({ spotify_id: 'u1', display_name: 'U' })
+      .returning()
+      .get();
+
+    enqueue({ userId: u.id, kind: 'import-orchestrator', payload: {} });
+    await runUntilEmpty();
+
+    expect(db.select().from(tracks).all()).toHaveLength(3);
+  });
+
   test('re-import skips items-page when playlist snapshot_id is unchanged', async () => {
     const T1 = mkTrack('t1', 'Track 1', ['a1'], 'al1');
     let playlistItemsCalls = 0;
