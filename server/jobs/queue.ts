@@ -74,7 +74,22 @@ export function startWorkers(): void {
   }
 }
 
+// Per-kind concurrency cap of 1: setInterval fires regardless of whether
+// the prior tick is still awaiting Spotify, so without this a slow API
+// call would let polls pile up and trigger 429s under our own fan-out.
+const inflight: Partial<Record<JobKind, boolean>> = {};
+
 async function runOnce(kind: JobKind): Promise<void> {
+  if (inflight[kind]) return;
+  inflight[kind] = true;
+  try {
+    await runOnceInner(kind);
+  } finally {
+    inflight[kind] = false;
+  }
+}
+
+async function runOnceInner(kind: JobKind): Promise<void> {
   const job = claimNext(kind);
   if (!job) return;
   try {
