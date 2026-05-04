@@ -10,6 +10,7 @@ import { registerFacetRoutes } from './api/facet';
 import { registerTrackRoutes } from './api/tracks';
 import { registerPlaybackRoutes } from './api/playback';
 import { setupSocketIO } from './realtime/io';
+import { registerRealtimeRoutes } from './realtime/routes';
 import { startWorkers } from './jobs/queue';
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
@@ -60,6 +61,7 @@ await registerImportRoutes(app);
 await registerFacetRoutes(app);
 await registerTrackRoutes(app);
 await registerPlaybackRoutes(app);
+await registerRealtimeRoutes(app);
 
 if (isProd) {
   // Compiled layout: dist/server/server/index.js + dist/client/...

@@ -4,7 +4,6 @@ import { db } from '../../shared/db/connection';
 import { jobs } from '../../shared/db/schema';
 import { enqueue } from '../jobs/queue';
 import { computeProgress } from '../jobs/progress';
-import { signSocketToken } from '../realtime/auth';
 
 export async function registerImportRoutes(app: FastifyInstance) {
   app.post('/api/import/start', async (req, reply) => {
@@ -52,9 +51,4 @@ export async function registerImportRoutes(app: FastifyInstance) {
     });
   });
 
-  app.get('/api/socket/token', async (req, reply) => {
-    const userId = req.session.get('user_id');
-    if (!userId) return reply.code(401).send({ error: 'unauthorized' });
-    return reply.send({ token: signSocketToken(userId) });
-  });
 }
