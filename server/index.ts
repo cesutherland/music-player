@@ -47,7 +47,9 @@ await app.register(secureSession, {
     path: '/',
     httpOnly: true,
     sameSite: 'lax',
-    secure: false,
+    // Default to secure in production. Override with COOKIE_SECURE=0 if
+    // running prod-mode behind plain HTTP (rare; documented escape hatch).
+    secure: isProd && process.env.COOKIE_SECURE !== '0',
     maxAge: 60 * 60 * 24 * 30,
   },
 });
