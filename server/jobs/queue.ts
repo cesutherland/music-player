@@ -11,7 +11,7 @@ import { enqueueArtistHydration } from './hydration';
 export type Job = typeof jobs.$inferSelect;
 
 const MAX_ATTEMPTS = 5;
-const POLL_MS = 100;
+const POLL_MS = 250;
 
 export function enqueue(opts: {
   userId: number;
