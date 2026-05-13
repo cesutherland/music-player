@@ -1,6 +1,7 @@
-FROM node:24-alpine AS build
+FROM node:24-slim AS build
 WORKDIR /app
-RUN apk add --no-cache python3 make g++
+RUN apt-get update && apt-get install -y --no-install-recommends python3 make g++ \
+  && rm -rf /var/lib/apt/lists/*
 COPY package.json package-lock.json* ./
 RUN npm install
 COPY . .
@@ -9,17 +10,20 @@ RUN npm run build
 # wholesale and avoid reinstalling (and avoid shipping the toolchain).
 RUN npm prune --omit=dev
 
-FROM node:24-alpine
+FROM node:24-slim
 WORKDIR /app
 COPY --from=build /app/package.json ./package.json
 COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/dist ./dist
-COPY --from=build /app/migrations ./migrations
+COPY --from=build /app/dist/client ./dist/client
+COPY --from=build /app/server ./server
 COPY --from=build /app/shared ./shared
+COPY --from=build /app/migrations ./migrations
 COPY --from=build /app/drizzle.config.ts ./
+COPY --from=build /app/tsconfig.base.json ./
 EXPOSE 3000
 ENV DB_PATH=/data/altplayer.sqlite
 ENV NODE_ENV=production
 ENV PORT=3000
+ENV HOST=0.0.0.0
 VOLUME ["/data"]
-CMD ["node", "dist/server/server/index.js"]
+CMD ["node_modules/.bin/tsx", "server/index.ts"]

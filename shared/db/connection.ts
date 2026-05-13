@@ -1,5 +1,7 @@
+import path from 'node:path';
 import Database from 'better-sqlite3';
 import { drizzle } from 'drizzle-orm/better-sqlite3';
+import { migrate } from 'drizzle-orm/better-sqlite3/migrator';
 import * as schema from './schema';
 
 const dbPath = process.env.DB_PATH ?? './altplayer.sqlite';
@@ -19,3 +21,8 @@ try {
 
 export const db = drizzle(sqlite, { schema });
 export { sqlite };
+
+export function runMigrations(): void {
+  const folder = process.env.MIGRATIONS_DIR ?? path.resolve(process.cwd(), 'migrations');
+  migrate(db, { migrationsFolder: folder });
+}

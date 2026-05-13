@@ -4,6 +4,7 @@ import Fastify from 'fastify';
 import staticPlugin from '@fastify/static';
 import cookie from '@fastify/cookie';
 import secureSession from '@fastify/secure-session';
+import { runMigrations } from '../shared/db/connection';
 import { registerAuthRoutes } from './auth/routes';
 import { registerImportRoutes } from './api/import';
 import { registerFacetRoutes } from './api/facet';
@@ -21,6 +22,8 @@ if (!process.env.SESSION_SECRET) {
 if (!process.env.SPOTIFY_CLIENT_ID) {
   throw new Error('SPOTIFY_CLIENT_ID is required');
 }
+
+runMigrations();
 
 const isProd = process.env.NODE_ENV === 'production';
 const app = Fastify({
@@ -64,8 +67,8 @@ await registerPlaybackRoutes(app);
 await registerRealtimeRoutes(app);
 
 if (isProd) {
-  // Compiled layout: dist/server/server/index.js + dist/client/...
-  const clientRoot = path.resolve(__dirname, '../../client');
+  // tsx runs source from /app/server/index.ts; client build is at /app/dist/client.
+  const clientRoot = path.resolve(__dirname, '../dist/client');
   await app.register(staticPlugin, {
     root: clientRoot,
     prefix: '/',
@@ -81,7 +84,8 @@ if (isProd) {
 }
 
 const port = Number(process.env.PORT ?? 3000);
-await app.listen({ port, host: '127.0.0.1' });
+const host = process.env.HOST ?? '127.0.0.1';
+await app.listen({ port, host });
 
 setupSocketIO(app);
 startWorkers();
