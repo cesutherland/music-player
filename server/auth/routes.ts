@@ -6,7 +6,8 @@ import { genCodeVerifier, genState, buildAuthorizeUrl } from './pkce';
 import { exchangeCodeForToken } from './tokens';
 
 const PORT = Number(process.env.PORT ?? 3000);
-const REDIRECT_URI = `http://127.0.0.1:${PORT}/api/auth/callback`;
+const REDIRECT_URI =
+  process.env.SPOTIFY_REDIRECT_URI ?? `http://127.0.0.1:${PORT}/api/auth/callback`;
 const POST_LOGIN_REDIRECT =
   process.env.NODE_ENV === 'production' ? '/' : 'http://127.0.0.1:5173/';
 

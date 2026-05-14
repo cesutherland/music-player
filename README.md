@@ -57,7 +57,8 @@ The container exposes `127.0.0.1:3000` and persists the SQLite database to `./da
 |---|---|---|---|
 | `SPOTIFY_CLIENT_ID` | yes | — | Client ID of your Spotify app. |
 | `SESSION_SECRET` | yes | — | 32-byte hex string (`openssl rand -hex 32`). Used for the secure session cookie. |
-| `PORT` | no | `3000` | Server port. The Spotify redirect URI must match. |
+| `SPOTIFY_REDIRECT_URI` | no | `http://127.0.0.1:${PORT}/api/auth/callback` | OAuth callback URL. Override when deploying behind a public hostname (e.g. `https://altplayer.example.com/api/auth/callback`). Must exactly match a redirect URI registered in the Spotify dashboard. |
+| `PORT` | no | `3000` | Server port. |
 | `DB_PATH` | no | `./altplayer.sqlite` | SQLite file path. |
 | `NODE_ENV` | no | unset (dev) | Set to `production` for the built bundle. |
 
@@ -71,7 +72,7 @@ The container exposes `127.0.0.1:3000` and persists the SQLite database to `./da
 
 ## Common issues
 
-**OAuth callback fails / "redirect URI mismatch".** The redirect URI in the Spotify dashboard must be exactly `http://127.0.0.1:3000/api/auth/callback`. Not `localhost`, not `0.0.0.0`, not without `/api/auth`.
+**OAuth callback fails / "redirect URI mismatch".** The redirect URI in the Spotify dashboard must be byte-exact with what the server sends — for local dev that's `http://127.0.0.1:3000/api/auth/callback` (not `localhost`, not `0.0.0.0`, not without `/api/auth`). For deployments, set `SPOTIFY_REDIRECT_URI` to the public callback URL and register the same value in the dashboard.
 
 **"Premium required" banner under the player.** Either your Spotify account isn't Premium, or the consent flow didn't grant the `streaming` scope. Try logging out and back in; check that the consent screen mentions "Stream and control Spotify on your other devices".
 
